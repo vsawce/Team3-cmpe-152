@@ -19,11 +19,6 @@ private:
     string table[200][2];
 };
 
-int main(int argc, const char * argv[]) {
-    cout << "Hello, World!" << endl;
-    return 0;
-}
-
 string nextToken(istream& in){
     int c;
     string word;
