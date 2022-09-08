@@ -157,15 +157,15 @@ string nextToken(Scanner sc, istream& in){
                 }
                 break;
             case ST_ERROR:
-                if (cstate == CHAR_WHITESPACE) {
+                if (p_cstate == CHAR_WHITESPACE || cstate == CHAR_WHITESPACE) {
                     cout << "TOKEN ERROR at line " << line_no << ": \'" << tok << "\'" << endl;
                     tstate = ST_FIRSTCHAR;
                 }
                 break;
         }
-        p_c = c;
-        tok += c;
-    }
+        if (tstate == ST_STRING || cstate != CHAR_WHITESPACE) {
+            tok += c;
+        }
         p_cstate = cstate;
     }
     return tok;
