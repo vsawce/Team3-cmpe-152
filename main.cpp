@@ -111,7 +111,7 @@ string nextToken(Scanner sc, ifstream& testFile, ofstream& out) {
             else if (cstate == CHAR_WHITESPACE) {
                 tstate = ST_FIRSTCHAR;  //Loop back
             }
-            else { //Unexpected, go to error
+            else { //Unexpected, go to error 
                 tstate = ST_ERROR;
             }
             break;
@@ -195,6 +195,10 @@ string nextToken(Scanner sc, ifstream& testFile, ofstream& out) {
                 out << "TOKEN ERROR at line " << line_no << ": \'" << tok << "\'" << endl;
                 tstate = ST_FIRSTCHAR; //Go back to assuming next character is first character of next token
             }
+            else if (cstate == CHAR_EOF) {
+                out << "TOKEN ERROR at line " << line_no << ": \'" << tok << "\'" << endl;
+                goto END; //OK according to MISRA C++
+            }
             break;
         case ST_END:
             out << "end" << endl;
@@ -206,7 +210,7 @@ string nextToken(Scanner sc, ifstream& testFile, ofstream& out) {
         p_cstate = cstate;
     }
 END:
-    return tok;
+    return "-1";
 }
 
 //Assign token/labels in constructor
@@ -370,9 +374,9 @@ int main(int argc, const char* argv[]) {
 
     ifstream testFile;
     testFile.open("masterTestCase.txt");
-    
+
     ofstream out;
-    testFile.open("masterTestCaseOut-1.txt");
+    out.open("masterTestCaseOut-1.txt", ios::trunc);
 
     if (!testFile.is_open()) {
         cout << "Error while opening masterTestCase.txt";
@@ -384,8 +388,8 @@ int main(int argc, const char* argv[]) {
 
         } while (word != "-1");
     }
-
-    return 0;
+    out.close();
     testFile.close();
+    return 0;
 
 }
