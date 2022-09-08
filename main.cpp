@@ -32,10 +32,11 @@ typedef enum {
   CHAR_LETTER,        //0
   CHAR_DIGIT,         //1
   CHAR_SINGLEQUOTE,   //2
-  CHAR_SPECIAL_SYM,   //3
-  CHAR_WHITESPACE,    //4
-  CHAR_EOF,           //5
-  CHAR_UNKNOWN        //6
+  CHAR_DECIMAL,       //3
+  CHAR_SPECIAL_SYM,   //4
+  CHAR_WHITESPACE,    //5
+  CHAR_EOF,           //6
+  CHAR_UNKNOWN        //7
 } char_state ; 
 
 typedef enum {
@@ -43,15 +44,16 @@ typedef enum {
   ST_WORD,          //1
   ST_OPERATOR,      //2
   ST_STRING,        //3
-  ST_NUMBER,        //4
-  ST_ERROR,         //5
-  ST_END            //6
+  ST_INTEGER,       //4
+  ST_REAL_NUM,      //5
+  ST_ERROR,         //6
+  ST_END            //7
 } token_state ; 
 
 const std::string STRING_TOKEN = "string";
 const std::string IDENTIFIER_TOKEN = "(identifier)";
 const std::string INTEGER_TOKEN = "(integer)";
-const std::string REAL_NUMBER_TOKEN = "(real number)";
+const std::string REAL_NUM_TOKEN = "(real number)";
 
 string nextToken(Scanner sc, istream& in){
     int line_no = 1;
@@ -80,6 +82,9 @@ string nextToken(Scanner sc, istream& in){
         else if (c == '\'') {
             cstate = CHAR_SINGLEQUOTE;
         }
+        else if (c == '.') {
+            cstate = CHAR_DECIMAL;
+        }
         else {
             cstate = CHAR_SPECIAL_SYM;
         }
@@ -96,13 +101,16 @@ string nextToken(Scanner sc, istream& in){
                     tstate = ST_STRING;
                 }
                 else if (cstate == CHAR_DIGIT) {
-                    tstate = ST_NUMBER;
+                    tstate = ST_INTEGER;
                 }
                 else if (cstate == CHAR_EOF) {
                     tstate = ST_END;
                 }
+                else if (cstate == CHAR_WHITESPACE) {
+                    tstate = ST_FIRSTCHAR;  //Loop back
+                }
                 else {
-                    tstate = ST_FIRSTCHAR; //Come back
+                    tstate = ST_ERROR;
                 }
                 break;
             case ST_WORD:
@@ -151,17 +159,33 @@ string nextToken(Scanner sc, istream& in){
                     //Else, go to error
                 }
                 break;
-            case ST_NUMBER:
+            case ST_INTEGER:
                 if (cstate == CHAR_DIGIT) {   //Keep parsing, maintain state
-                    tstate = ST_NUMBER;
+                    tstate = ST_INTEGER;
                 }
-                else if (cstate == CHAR_SPECIAL_SYM) {
-                    tstate = ST_ERROR;
+                else if (cstate == CHAR_DECIMAL) {
+                    tstate = ST_REAL_NUM;
                 }
                 else if (cstate == CHAR_WHITESPACE) {
-                    cout << "TOKEN:" << tok << endl;
+                    std::string got_label = sc.GetLabel(INTEGER_TOKEN);
+                    cout << got_label << " : " << tok << endl;  
                     tstate = ST_FIRSTCHAR;
-                    //Else, go to error
+                }
+                else {
+                    tstate = ST_ERROR;
+                }
+                break;
+            case ST_REAL_NUM:
+                if (cstate == CHAR_DIGIT) {   //Keep parsing, maintain state
+                    tstate = ST_REAL_NUM;
+                }
+                else if (cstate == CHAR_WHITESPACE) {
+                    std::string got_label = sc.GetLabel(REAL_NUM_TOKEN);
+                    cout << got_label << " : " << tok << endl;  
+                    tstate = ST_FIRSTCHAR;
+                }
+                else {
+                    tstate = ST_ERROR;
                 }
                 break;
             case ST_ERROR:
@@ -243,7 +267,7 @@ Scanner::Scanner()
         {"xor",             "XOR"},
         {"(integer)",       "INTEGER"},     //Placeholder
         {"(real number)",   "REAL"},        //Placeholder
-        {"(identifier)",    "INDENTIFIER"}, //Placeholder
+        {"(identifier)",    "INDENTIFIER"}, //Placeholder Should be IDENTIFIER but assignment says INDENTIFIER???
         {"+",               "PLUSOP"},
         {"-",               "MINUSOP"},
         {"*",               "MULTOP"},
