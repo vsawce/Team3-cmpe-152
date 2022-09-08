@@ -28,17 +28,121 @@ private:
     std::string table[128][2];
 };
 
-string nextToken(istream& in){
+typedef enum {
+  ST_LETTER,        //0
+  ST_DIGIT,         //1
+  ST_SINGLEQUOTE,   //2
+  ST_SPECIAL_SYM,   //3
+  ST_WHITESPACE,    //4
+  ST_UNKNOWN        //5
+} char_state ; 
+
+typedef enum {
+  ST_FIRSTCHAR,      //0
+  ST_WORD,         //1
+  ST_OPERATOR,     //2
+  ST_STRING,
+  ST_INTEGER,      //3
+  ST_REAL_NUM,     //4
+  ST_IDENTIFIER,   //5
+  ST_ERROR         //6
+} token_state ; 
+
+string nextToken(Scanner sc, istream& in){
     int c;
-    string word;
+    bool first_token_char = false;
+    char p_c;
+    char_state cstate;
+    token_state tstate = ST_FIRSTCHAR;
+    string tok;
     while (!in.eof())
     {
         c = in.get();
-        if (c == ' ' || c == '\t' || c == '\n') break;
-        word += c;
+        if (c == ' ' || c == '\t' || c == '\n' || c == '\r') {
+            cstate = ST_WHITESPACE;
+        }
+        else if (isalpha(c)) {
+            cstate = ST_LETTER;
+        }
+        else if (isdigit(c)) {
+            cstate = ST_DIGIT;
+        }
+        else if (c == '\'') {
+            cstate = ST_SINGLEQUOTE;
+        }
+        else {
+            cstate = ST_SPECIAL_SYM;
+        }
+        switch (tstate) {
+            case ST_FIRSTCHAR:
+                tok = ""; //Reset token
+                if (cstate == ST_LETTER) {
+                    tstate = ST_WORD;
+                }
+                else if (cstate == ST_SPECIAL_SYM) {
+                    tstate = ST_OPERATOR;
+                }
+                else if (cstate == ST_SINGLEQUOTE) {
+                    tstate = ST_STRING;
+                }
+                else if (cstate == ST_DIGIT) {
+                    tstate = ST_INTEGER;
+                }
+                else {
+                    tstate = ST_FIRSTCHAR; //Come back
+                }
+                
+                break;
+            case ST_WORD:
+                if (cstate == ST_LETTER || cstate == ST_DIGIT) {  //Keep parsing, maintain state
+                    tstate = ST_WORD;
+                }
+                else if (cstate == ST_WHITESPACE) {
+                    //If in lookup table, flush word
+                    cout << "TOKEN:\"" << tok << "\"";
+                    if (sc.GetLabel(tok) != "") {
+                        cout << "\tFOUND:\"" << tok << "\"";                  
+                    }
+                    tstate = ST_FIRSTCHAR;
+                    cout << endl;
+                    //Else, go to error
+                }
+                else {
+                    tstate = ST_ERROR;
+                }
+                break;
+            case ST_OPERATOR:
+                if (cstate == ST_SPECIAL_SYM) {
+                    tstate = ST_OPERATOR;
+                }
+                else if (cstate == ST_WHITESPACE) {
+                    //If in lookup table, flush word
+                    cout << "TOKEN:\"" << tok << "\"";
+                    if (sc.GetLabel(tok) != "") {
+                        cout << "\tFOUND:\"" << tok << "\"";                  
+                    }
+                    tstate = ST_FIRSTCHAR;
+                    cout << endl;
+                    //Else, go to error
+                }
+                else {
+                    tstate = ST_ERROR;
+                }
+                break;
+            case ST_STRING:
+               if (p_c == '\'' && cstate == ST_WHITESPACE) {
+                    cout << "TOKEN:" << tok << endl;
+                    tstate = ST_FIRSTCHAR;
+                    //Else, go to error
+                }
+                break;
+        }
+        p_c = c;
+        tok += c;
     }
-    return word;
+    return tok;
 }
+
 //Assign token/labels in constructor
 Scanner::Scanner()
 : table
@@ -163,24 +267,12 @@ std::string Scanner::GetToken(std::string label) const
 
 int main(int argc, const char * argv[]) {
     Scanner sc;
-    cout << "Hello, World!" << endl;
-
-    //Accessor test code
-    cout << sc.GetLabel("for") << endl;
-    cout << sc.GetLabel("fOr") << endl;
-    cout << sc.GetLabel("FOR") << endl;
-    cout << sc.GetLabel("(*") << endl;
-    cout << sc.GetLabel("bingbong") << endl;
-    return 0;
-}
-
-int main(){
     string word;
     do {
-        word = nextToken(cin);
+        word = nextToken(sc, cin);
         cout << "[" << word << "]"; //link with hash table symbol table for output
 
     } while (word != "-1");
 
     return 0;
-} 
+}
