@@ -43,10 +43,7 @@ typedef enum {
   ST_OPERATOR,      //2
   ST_STRING,        //3
   ST_NUMBER,        //4
-  ST_INTEGER,       //5
-  ST_REAL_NUMBER,   //6
-  ST_FLOAT,         //7
-  ST_ERROR          //8
+  ST_ERROR          //5
 } token_state ; 
 
 string nextToken(Scanner sc, istream& in){
