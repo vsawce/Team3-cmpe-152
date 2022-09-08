@@ -368,8 +368,10 @@ int main(int argc, const char* argv[]) {
     Scanner sc;
     string word;
 
-    std::string inTestFileName = "test-in-original.txt";
-    std::string outTestFileName = "test-out-original.txt";
+    std::string inTestFileName = "test-in.txt";
+    std::string outTestFileName = "test-out.txt";
+    //std::string inTestFileName = "test-in-original.txt";
+    //std::string outTestFileName = "test-out-original.txt";
 
     ifstream testFile;
     testFile.open(inTestFileName);

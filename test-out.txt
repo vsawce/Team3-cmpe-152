@@ -1,0 +1,36 @@
+INDENTIFIER : begins
+BEGIN : BEGIN
+BEGIN : begin
+BEGIN : Begin
+BEGIN : BeGiN
+STRING : 'Hello.'
+STRING : ''
+STRING : 'world'
+INDENTIFIER : hElLo
+INDENTIFIER : worlD
+REAL : 4.5
+STRING : 'A'
+STRING : 'B'
+PLUSOP : +
+MINUSOP : -
+MULTOP : *
+DIVOP : /
+ASSIGN : :=
+TOKEN ERROR at line 13: '.'
+COMMA : ,
+SEMICOLOR : ;
+TOKEN ERROR at line 13: ':'
+NE : <>
+LT : <
+LTEQ : <=
+GTEQ : >=
+GT : >
+LPAREN : (
+RPAREN : )
+LBRACKET : [
+RBRACKET : ]
+LBRACE : {
+RBRACE : }
+RBRACE : }
+CARAT : ^
+end
