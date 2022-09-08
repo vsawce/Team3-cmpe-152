@@ -29,23 +29,25 @@ private:
 };
 
 typedef enum {
-  ST_LETTER,        //0
-  ST_DIGIT,         //1
-  ST_SINGLEQUOTE,   //2
-  ST_SPECIAL_SYM,   //3
-  ST_WHITESPACE,    //4
-  ST_UNKNOWN        //5
+  CHAR_LETTER,        //0
+  CHAR_DIGIT,         //1
+  CHAR_SINGLEQUOTE,   //2
+  CHAR_SPECIAL_SYM,   //3
+  CHAR_WHITESPACE,    //4
+  CHAR_UNKNOWN        //5
 } char_state ; 
 
 typedef enum {
-  ST_FIRSTCHAR,      //0
-  ST_WORD,         //1
-  ST_OPERATOR,     //2
-  ST_STRING,
-  ST_INTEGER,      //3
-  ST_REAL_NUM,     //4
-  ST_IDENTIFIER,   //5
-  ST_ERROR         //6
+  ST_FIRSTCHAR,     //0
+  ST_WORD,          //1
+  ST_OPERATOR,      //2
+  ST_STRING,        //3
+  ST_NUMBER,        //4
+  ST_INTEGER,       //5
+  ST_REAL_NUMBER,   //6
+  ST_FLOAT,         //7
+  ST_IDENTIFIER,    //8
+  ST_ERROR          //9
 } token_state ; 
 
 string nextToken(Scanner sc, istream& in){
@@ -59,45 +61,44 @@ string nextToken(Scanner sc, istream& in){
     {
         c = in.get();
         if (c == ' ' || c == '\t' || c == '\n' || c == '\r') {
-            cstate = ST_WHITESPACE;
+            cstate = CHAR_WHITESPACE;
         }
         else if (isalpha(c)) {
-            cstate = ST_LETTER;
+            cstate = CHAR_LETTER;
         }
         else if (isdigit(c)) {
-            cstate = ST_DIGIT;
+            cstate = CHAR_DIGIT;
         }
         else if (c == '\'') {
-            cstate = ST_SINGLEQUOTE;
+            cstate = CHAR_SINGLEQUOTE;
         }
         else {
-            cstate = ST_SPECIAL_SYM;
+            cstate = CHAR_SPECIAL_SYM;
         }
         switch (tstate) {
             case ST_FIRSTCHAR:
                 tok = ""; //Reset token
-                if (cstate == ST_LETTER) {
+                if (cstate == CHAR_LETTER) {
                     tstate = ST_WORD;
                 }
-                else if (cstate == ST_SPECIAL_SYM) {
+                else if (cstate == CHAR_SPECIAL_SYM) {
                     tstate = ST_OPERATOR;
                 }
-                else if (cstate == ST_SINGLEQUOTE) {
+                else if (cstate == CHAR_SINGLEQUOTE) {
                     tstate = ST_STRING;
                 }
-                else if (cstate == ST_DIGIT) {
+                else if (cstate == CHAR_DIGIT) {
                     tstate = ST_INTEGER;
                 }
                 else {
                     tstate = ST_FIRSTCHAR; //Come back
                 }
-                
                 break;
             case ST_WORD:
-                if (cstate == ST_LETTER || cstate == ST_DIGIT) {  //Keep parsing, maintain state
+                if (cstate == CHAR_LETTER || cstate == CHAR_DIGIT) {  //Keep parsing, maintain state
                     tstate = ST_WORD;
                 }
-                else if (cstate == ST_WHITESPACE) {
+                else if (cstate == CHAR_WHITESPACE) {
                     //If in lookup table, flush word
                     cout << "TOKEN:\"" << tok << "\"";
                     if (sc.GetLabel(tok) != "") {
@@ -112,10 +113,10 @@ string nextToken(Scanner sc, istream& in){
                 }
                 break;
             case ST_OPERATOR:
-                if (cstate == ST_SPECIAL_SYM) {
+                if (cstate == CHAR_SPECIAL_SYM) {
                     tstate = ST_OPERATOR;
                 }
-                else if (cstate == ST_WHITESPACE) {
+                else if (cstate == CHAR_WHITESPACE) {
                     //If in lookup table, flush word
                     cout << "TOKEN:\"" << tok << "\"";
                     if (sc.GetLabel(tok) != "") {
@@ -130,7 +131,7 @@ string nextToken(Scanner sc, istream& in){
                 }
                 break;
             case ST_STRING:
-               if (p_c == '\'' && cstate == ST_WHITESPACE) {
+               if (p_c == '\'' && cstate == CHAR_WHITESPACE) {
                     cout << "TOKEN:" << tok << endl;
                     tstate = ST_FIRSTCHAR;
                     //Else, go to error
