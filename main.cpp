@@ -48,7 +48,6 @@ typedef enum {
 
 string nextToken(Scanner sc, istream& in){
     int line_no = 1;
-    bool first_token_char = false;
     char c, p_c;
     char_state cstate;
     token_state tstate = ST_FIRSTCHAR;
