@@ -34,7 +34,8 @@ typedef enum {
   CHAR_SINGLEQUOTE,   //2
   CHAR_SPECIAL_SYM,   //3
   CHAR_WHITESPACE,    //4
-  CHAR_UNKNOWN        //5
+  CHAR_EOF,           //5
+  CHAR_UNKNOWN        //6
 } char_state ; 
 
 typedef enum {
@@ -43,7 +44,8 @@ typedef enum {
   ST_OPERATOR,      //2
   ST_STRING,        //3
   ST_NUMBER,        //4
-  ST_ERROR          //5
+  ST_ERROR,         //5
+  ST_END            //6
 } token_state ; 
 
 const std::string STRING_TOKEN = "string";
@@ -57,10 +59,13 @@ string nextToken(Scanner sc, istream& in){
     char_state cstate, p_cstate;
     token_state tstate = ST_FIRSTCHAR;
     string tok;
-    while (!in.eof())
+    while (1)
     {
         c = in.get();
-        if (c == ' ' || c == '\t' || c == '\n' || c == '\r') {
+        if (in.eof()) {
+            cstate = CHAR_EOF;
+        }
+        else if (c == ' ' || c == '\t' || c == '\n' || c == '\r') {
             if (c == '\n') {
                 line_no++;
             }
@@ -92,6 +97,9 @@ string nextToken(Scanner sc, istream& in){
                 }
                 else if (cstate == CHAR_DIGIT) {
                     tstate = ST_NUMBER;
+                }
+                else if (cstate == CHAR_EOF) {
+                    tstate = ST_END;
                 }
                 else {
                     tstate = ST_FIRSTCHAR; //Come back
@@ -162,12 +170,16 @@ string nextToken(Scanner sc, istream& in){
                     tstate = ST_FIRSTCHAR;
                 }
                 break;
+            case ST_END:
+                cout << "end" <<endl;
+                goto END; //OK according to MISRA C++
         }
         if (tstate == ST_STRING || cstate != CHAR_WHITESPACE) {
             tok += c;
         }
         p_cstate = cstate;
     }
+END:
     return tok;
 }
 
@@ -248,7 +260,7 @@ Scanner::Scanner()
         {"*=",              "MULTEQUAL"},
         {"/=",              "DIVEQUAL"},
         {"^",               "CARAT"},
-        {";",               "SEMICOLOR"},
+        {";",               "SEMICOLOR"},   //Should be SEMICOLON but assignment says SEMICOLOR???
         {",",               "COMMA"},
         {"(",               "LPAREN"},
         {")",               "RPAREN"},
@@ -298,7 +310,7 @@ int main(int argc, const char * argv[]) {
     string word;
     do {
         word = nextToken(sc, cin);
-        cout << "[" << word << "]"; //link with hash table symbol table for output
+        //cout << "[" << word << "]"; //link with hash table symbol table for output
 
     } while (word != "-1");
 
