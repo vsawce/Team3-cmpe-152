@@ -28,7 +28,7 @@ private:
     std::string table[128][2];
 };
 
-string nextToken(istream& in){
+string nexttoken(istream& in){
     int c;
     string word;
     while (!in.eof())
@@ -172,12 +172,9 @@ int main(int argc, const char * argv[]) {
     cout << sc.GetLabel("(*") << endl;
     cout << sc.GetLabel("bingbong") << endl;
     return 0;
-}
-
-int main(){
     string word;
     do {
-        word = nextToken(cin);
+        word = nexttoken(cin);
         cout << "[" << word << "]"; //link with hash table symbol table for output
 
     } while (word != "-1");
