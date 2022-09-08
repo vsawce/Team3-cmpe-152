@@ -88,7 +88,7 @@ string nextToken(Scanner sc, istream& in){
                     tstate = ST_STRING;
                 }
                 else if (cstate == CHAR_DIGIT) {
-                    tstate = ST_INTEGER;
+                    tstate = ST_NUMBER;
                 }
                 else {
                     tstate = ST_FIRSTCHAR; //Come back
@@ -113,7 +113,7 @@ string nextToken(Scanner sc, istream& in){
                 }
                 break;
             case ST_OPERATOR:
-                if (cstate == CHAR_SPECIAL_SYM) {
+                if (cstate == CHAR_SPECIAL_SYM) {   //Keep parsing, maintain state
                     tstate = ST_OPERATOR;
                 }
                 else if (cstate == CHAR_WHITESPACE) {
@@ -131,7 +131,20 @@ string nextToken(Scanner sc, istream& in){
                 }
                 break;
             case ST_STRING:
-               if (p_c == '\'' && cstate == CHAR_WHITESPACE) {
+                if (p_c == '\'' && cstate == CHAR_WHITESPACE) {
+                    cout << "TOKEN:" << tok << endl;
+                    tstate = ST_FIRSTCHAR;
+                    //Else, go to error
+                }
+                break;
+            case ST_NUMBER:
+                if (cstate == CHAR_DIGIT) {   //Keep parsing, maintain state
+                    tstate = ST_NUMBER;
+                }
+                else if (cstate == CHAR_SPECIAL_SYM) {
+                    tstate = ST_ERROR;
+                }
+                else if (cstate == CHAR_WHITESPACE) {
                     cout << "TOKEN:" << tok << endl;
                     tstate = ST_FIRSTCHAR;
                     //Else, go to error
