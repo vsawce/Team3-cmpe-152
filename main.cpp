@@ -4,6 +4,7 @@
 //
 //  Created by MSSV on 9/7/22.
 //
+#include <algorithm>
 #include <string>
 #include <iostream>
 using namespace std;
@@ -120,8 +121,12 @@ Scanner::Scanner()
 
 std::string Scanner::GetLabel(std::string token) const
 {
-    //Search through each row
     unsigned int table_len = sizeof(table)/sizeof(table[0]);
+    //Convert token to lowercase
+    //      Your scanner should not be case sensitive. In other words, it should recognize
+    //      “array”, “ARRAY”, or even “ArRAy.”
+    transform(token.begin(), token.end(), token.begin(), ::tolower);
+    //Search through each row
     for (unsigned int i = 0; i < table_len; i++) {
         if (table[i][0] == token)
             return table[i][1];
@@ -133,6 +138,9 @@ std::string Scanner::GetLabel(std::string token) const
 std::string Scanner::GetToken(std::string label) const
 {
     unsigned int table_len = sizeof(table)/sizeof(table[0]);
+    //Convert label to uppercase
+    transform(label.begin(), label.end(), label.begin(), ::toupper);
+    //Search through each row
     for (unsigned int i = 0; i < table_len; i++) {
         if (table[i][1] == label)
             return table[i][0];
@@ -147,10 +155,9 @@ int main(int argc, const char * argv[]) {
 
     //Accessor test code
     cout << sc.GetLabel("for") << endl;
-    cout << sc.GetToken("FOR") << endl;
+    cout << sc.GetLabel("fOr") << endl;
+    cout << sc.GetLabel("FOR") << endl;
     cout << sc.GetLabel("(*") << endl;
-    cout << sc.GetToken("LCOMMENT") << endl;
     cout << sc.GetLabel("bingbong") << endl;
-    cout << sc.GetToken("bongbing") << endl;
     return 0;
 }
