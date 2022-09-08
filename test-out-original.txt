@@ -32,12 +32,4 @@ LBRACE : {
 RBRACE : }
 RBRACE : }
 CARAT : ^
-TOKEN ERROR at line 6: '..'
-TOKEN ERROR at line 8: '+-:=<>=<=='
-INTEGER : 0
-INTEGER : 1
-INTEGER : 20
-INTEGER : 31415926
-INTEGER : 1
-TOKEN ERROR at line 9: '3.14.1'
-TOKEN ERROR at line 10: 'HUH?'
+end
