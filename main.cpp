@@ -46,10 +46,15 @@ typedef enum {
   ST_ERROR          //5
 } token_state ; 
 
+const std::string STRING_TOKEN = "string";
+const std::string IDENTIFIER_TOKEN = "(identifier)";
+const std::string INTEGER_TOKEN = "(integer)";
+const std::string REAL_NUMBER_TOKEN = "(real number)";
+
 string nextToken(Scanner sc, istream& in){
     int line_no = 1;
-    char c, p_c;
-    char_state cstate;
+    char c;
+    char_state cstate, p_cstate;
     token_state tstate = ST_FIRSTCHAR;
     string tok;
     while (!in.eof())
@@ -97,13 +102,13 @@ string nextToken(Scanner sc, istream& in){
                     tstate = ST_WORD;
                 }
                 else if (cstate == CHAR_WHITESPACE) {
-                    //If in lookup table, flush word
-                    cout << "TOKEN:\"" << tok << "\"";
-                    if (sc.GetLabel(tok) != "") {
-                        cout << "\tFOUND:\"" << tok << "\"";                  
+                    std::string got_label = sc.GetLabel(tok); //Look up token
+                    //If token not in lookup table
+                    if (got_label == "") {  //Then it means it's an identifier
+                        got_label = sc.GetLabel(IDENTIFIER_TOKEN);
                     }
+                    cout << got_label << " : " << tok << endl;
                     tstate = ST_FIRSTCHAR;
-                    cout << endl;
                     //Else, go to error
                 }
                 else {
@@ -115,13 +120,15 @@ string nextToken(Scanner sc, istream& in){
                     tstate = ST_OPERATOR;
                 }
                 else if (cstate == CHAR_WHITESPACE) {
-                    //If in lookup table, flush word
-                    cout << "TOKEN:\"" << tok << "\"";
-                    if (sc.GetLabel(tok) != "") {
-                        cout << "\tFOUND:\"" << tok << "\"";                  
+                    std::string got_label = sc.GetLabel(tok); //Look up token
+                    //If token not in lookup table
+                    if (got_label == "") {  //Then error
+                        tstate = ST_ERROR;
                     }
-                    tstate = ST_FIRSTCHAR;
-                    cout << endl;
+                    else {
+                        cout << got_label << " : " << tok << endl;
+                        tstate = ST_FIRSTCHAR;
+                    }
                     //Else, go to error
                 }
                 else {
@@ -129,8 +136,9 @@ string nextToken(Scanner sc, istream& in){
                 }
                 break;
             case ST_STRING:
-                if (p_c == '\'' && cstate == CHAR_WHITESPACE) {
-                    cout << "TOKEN:" << tok << endl;
+                if (p_cstate == CHAR_SINGLEQUOTE && cstate == CHAR_WHITESPACE) {
+                    std::string got_label = sc.GetLabel(STRING_TOKEN);
+                    cout << got_label << " : " << tok << endl;  
                     tstate = ST_FIRSTCHAR;
                     //Else, go to error
                 }
@@ -157,6 +165,8 @@ string nextToken(Scanner sc, istream& in){
         }
         p_c = c;
         tok += c;
+    }
+        p_cstate = cstate;
     }
     return tok;
 }
