@@ -1,6 +1,6 @@
 //
 //  main.cpp
-//  Assignment2
+//  Assignment-2
 //
 //  Created by Team 3 on 9/7/22.
 //
