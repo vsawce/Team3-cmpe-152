@@ -150,6 +150,12 @@ string nextToken(Scanner sc, istream& in){
                     //Else, go to error
                 }
                 break;
+            case ST_ERROR:
+                if (cstate == CHAR_WHITESPACE) {
+                    cout << "ERROR:\"" << tok << "\"" << endl;
+                    tstate = ST_FIRSTCHAR;
+                }
+                break;
         }
         p_c = c;
         tok += c;
