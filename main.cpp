@@ -57,14 +57,15 @@ const std::string IDENTIFIER_TOKEN = "(identifier)";
 const std::string INTEGER_TOKEN = "(integer)";
 const std::string REAL_NUM_TOKEN = "(real number)";
 
+int line_no = 1;
+char c;
+char_state cstate, p_cstate;
+token_state tstate = ST_FIRSTCHAR;
+std::string tok;
+
 string nextToken(Scanner sc, ifstream& testFile, ofstream& out) {
-    int line_no = 1;
-    char c;
-    char_state cstate, p_cstate;
-    token_state tstate = ST_FIRSTCHAR;
-    string tok;
-    while (1)
-    {
+    //while (1)
+    //{
         c = testFile.get();
         if (testFile.eof()) {
             cstate = CHAR_EOF;
@@ -195,17 +196,20 @@ string nextToken(Scanner sc, ifstream& testFile, ofstream& out) {
                 out << "TOKEN ERROR at line " << line_no << ": \'" << tok << "\'" << endl;
                 tstate = ST_FIRSTCHAR; //Go back to assuming next character is first character of next token
             }
+            else {
+                tstate = ST_END; //If invalid, jump to end state
+            }
             break;
         case ST_END:
             out << "end" << endl;
-            goto END; //OK according to MISRA C++
+            cout << "end" << endl;
+            return "-1"; //EOF
         }
         if (tstate == ST_STRING || cstate != CHAR_WHITESPACE) {
             tok += c;
         }
         p_cstate = cstate;
-    }
-END:
+    //}
     return tok;
 }
 
@@ -369,20 +373,20 @@ int main(int argc, const char* argv[]) {
     string word;
 
     ifstream testFile;
-    testFile.open("masterTestCase.txt");
+    testFile.open("test-in-original.txt");
     
     ofstream out;
-    out.open("masterTestCaseOut-1.txt");
+    out.open("test-out-original.txt");
 
     if (!testFile.is_open()) {
         cout << "Error while opening masterTestCase.txt";
     }
     else {
-        do {
+        while (word != "-1") {
             word = nextToken(sc, testFile, out);
-            //cout << "[" << word << "]"; //link with hash table symbol table for output
+            cout << "[" << word << "]"; //link with hash table symbol table for output
 
-        } while (word != "-1");
+        } 
     }
 
     testFile.close();
