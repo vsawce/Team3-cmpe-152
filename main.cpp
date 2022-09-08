@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <string>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 using namespace std;
 
 class Scanner
@@ -161,9 +163,40 @@ std::string Scanner::GetToken(std::string label) const
     return "";
 }
 
+int readfile() {
+    istringstream iss;
+    std::ifstream myfile;
+    string word;
+    myfile.open("masterTestCase.txt");  //reads from masterTestCase
+    ofstream output("masterTestCaseOut-1.txt"); //Outputs to MasterTestCaseOut-1
+    std::string myline;
+
+    if (myfile.is_open()) {
+        while (!myfile.eof()) {
+            std::getline(myfile, myline);
+            if (myfile.good()) {    //reads word by word from the line
+                iss.clear();    //clear out state
+                iss.str(myline);
+                while (iss.good()) {
+                    iss >> word;
+                    output << word << endl; //output to different file
+                }
+            }
+        }
+    }
+
+    else {
+        std::cout << "Couldn't open file\n";
+    }
+
+    return 0;
+}
+
 int main(int argc, const char * argv[]) {
     Scanner sc;
     cout << "Hello, World!" << endl;
+
+    readfile(); //reads from files
 
     //Accessor test code
     cout << sc.GetLabel("for") << endl;
