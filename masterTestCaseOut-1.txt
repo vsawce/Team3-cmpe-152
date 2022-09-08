@@ -1,0 +1,43 @@
+INDENTIFIER : Hello
+INDENTIFIER : world
+BEGIN : begin
+INDENTIFIER : begins
+BEGIN : BEGIN
+BEGIN : Begin
+BEGIN : BeGiN
+STRING : 'Hello, world.'
+STRING : ''
+STRING : 'A'
+STRING : 'B'
+STRING : ''
+PLUSOP : +
+MINUSOP : -
+MULTOP : *
+DIVOP : /
+ASSIGN : :=
+TOKEN ERROR at line 6: '.'
+COMMA : ,
+SEMICOLOR : ;
+TOKEN ERROR at line 6: ':'
+NE : <>
+LT : <
+LTEQ : <=
+GTEQ : >=
+GT : >
+LPAREN : (
+RPAREN : )
+LBRACKET : [
+RBRACKET : ]
+LBRACE : {
+RBRACE : }
+RBRACE : }
+CARAT : ^
+TOKEN ERROR at line 6: '..'
+TOKEN ERROR at line 8: '+-:=<>=<=='
+INTEGER : 0
+INTEGER : 1
+INTEGER : 20
+INTEGER : 31415926
+INTEGER : 1
+TOKEN ERROR at line 9: '3.14.1'
+TOKEN ERROR at line 10: 'HUH?'

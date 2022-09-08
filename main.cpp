@@ -372,7 +372,7 @@ int main(int argc, const char* argv[]) {
     testFile.open("masterTestCase.txt");
     
     ofstream out;
-    testFile.open("masterTestCaseOut-1.txt");
+    out.open("masterTestCaseOut-1.txt");
 
     if (!testFile.is_open()) {
         cout << "Error while opening masterTestCase.txt";
