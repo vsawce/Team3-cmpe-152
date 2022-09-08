@@ -385,7 +385,6 @@ int main(int argc, const char* argv[]) {
         } while (word != "-1");
     }
 
-    return 0;
     testFile.close();
-
+    return 0;
 }
