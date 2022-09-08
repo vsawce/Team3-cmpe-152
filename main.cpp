@@ -39,15 +39,14 @@ typedef enum {
 
 typedef enum {
   ST_FIRSTCHAR,     //0
-  ST_WORD,          //1
+  ST_IDENTIFIER,    //1
   ST_OPERATOR,      //2
   ST_STRING,        //3
   ST_NUMBER,        //4
   ST_INTEGER,       //5
   ST_REAL_NUMBER,   //6
   ST_FLOAT,         //7
-  ST_IDENTIFIER,    //8
-  ST_ERROR          //9
+  ST_ERROR          //8
 } token_state ; 
 
 string nextToken(Scanner sc, istream& in){
@@ -82,7 +81,7 @@ string nextToken(Scanner sc, istream& in){
             case ST_FIRSTCHAR:
                 tok = ""; //Reset token
                 if (cstate == CHAR_LETTER) {
-                    tstate = ST_WORD;
+                    tstate = ST_IDENTIFIER;
                 }
                 else if (cstate == CHAR_SPECIAL_SYM) {
                     tstate = ST_OPERATOR;
@@ -97,9 +96,9 @@ string nextToken(Scanner sc, istream& in){
                     tstate = ST_FIRSTCHAR; //Come back
                 }
                 break;
-            case ST_WORD:
+            case ST_IDENTIFIER:
                 if (cstate == CHAR_LETTER || cstate == CHAR_DIGIT) {  //Keep parsing, maintain state
-                    tstate = ST_WORD;
+                    tstate = ST_IDENTIFIER;
                 }
                 else if (cstate == CHAR_WHITESPACE) {
                     //If in lookup table, flush word
