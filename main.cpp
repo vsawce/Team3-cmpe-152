@@ -2,8 +2,9 @@
 //  main.cpp
 //  Assignment2
 //
-//  Created by MSSV on 9/7/22.
+//  Created by Team 3 on 9/7/22.
 //
+
 #include <algorithm>
 #include <string>
 #include <iostream>
