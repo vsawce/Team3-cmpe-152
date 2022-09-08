@@ -1,0 +1,21 @@
+
+ begins BEGIN begin Begin BeGiN
+
+'Hello.'
+''
+
+'world'
+
+hElLo worlD
+
+4.5
+'A' 'B'
++ - * / := . , ; : = <> < <= >= > ( ) [ ] { } } ^ ..
+:/><
+
+3 9 2 5 80 23432
+
+
+??
+
+//
