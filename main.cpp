@@ -51,9 +51,9 @@ typedef enum {
 } token_state ; 
 
 string nextToken(Scanner sc, istream& in){
-    int c;
+    int line_no = 1;
     bool first_token_char = false;
-    char p_c;
+    char c, p_c;
     char_state cstate;
     token_state tstate = ST_FIRSTCHAR;
     string tok;
@@ -61,6 +61,9 @@ string nextToken(Scanner sc, istream& in){
     {
         c = in.get();
         if (c == ' ' || c == '\t' || c == '\n' || c == '\r') {
+            if (c == '\n') {
+                line_no++;
+            }
             cstate = CHAR_WHITESPACE;
         }
         else if (isalpha(c)) {
@@ -152,7 +155,7 @@ string nextToken(Scanner sc, istream& in){
                 break;
             case ST_ERROR:
                 if (cstate == CHAR_WHITESPACE) {
-                    cout << "ERROR:\"" << tok << "\"" << endl;
+                    cout << "TOKEN ERROR at line " << line_no << ": \'" << tok << "\'" << endl;
                     tstate = ST_FIRSTCHAR;
                 }
                 break;
