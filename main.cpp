@@ -109,7 +109,7 @@ string nextToken(Scanner sc, istream& in){
                 else if (cstate == CHAR_WHITESPACE) {
                     tstate = ST_FIRSTCHAR;  //Loop back
                 }
-                else {
+                else { //Unexpected, go to error
                     tstate = ST_ERROR;
                 }
                 break;
@@ -117,17 +117,17 @@ string nextToken(Scanner sc, istream& in){
                 if (cstate == CHAR_LETTER || cstate == CHAR_DIGIT) {  //Keep parsing, maintain state
                     tstate = ST_WORD;
                 }
-                else if (cstate == CHAR_WHITESPACE) {
-                    std::string got_label = sc.GetLabel(tok); //Look up token
+                else if (cstate == CHAR_WHITESPACE) {   //End token
+                    std::string got_label = sc.GetLabel(tok); //Look up label with token
                     //If token not in lookup table
                     if (got_label == "") {  //Then it means it's an identifier
-                        got_label = sc.GetLabel(IDENTIFIER_TOKEN);
+                        got_label = sc.GetLabel(IDENTIFIER_TOKEN); //Look up label with identifier token
                     }
                     cout << got_label << " : " << tok << endl;
-                    tstate = ST_FIRSTCHAR;
+                    tstate = ST_FIRSTCHAR; //Go back to assuming next character is first character of next token
                     //Else, go to error
                 }
-                else {
+                else { //Unexpected, go to error
                     tstate = ST_ERROR;
                 }
                 break;
@@ -135,27 +135,27 @@ string nextToken(Scanner sc, istream& in){
                 if (cstate == CHAR_SPECIAL_SYM) {   //Keep parsing, maintain state
                     tstate = ST_OPERATOR;
                 }
-                else if (cstate == CHAR_WHITESPACE) {
-                    std::string got_label = sc.GetLabel(tok); //Look up token
+                else if (cstate == CHAR_WHITESPACE) { //End token
+                    std::string got_label = sc.GetLabel(tok); //Look up label with token
                     //If token not in lookup table
-                    if (got_label == "") {  //Then error
+                    if (got_label == "") {  //Then error (because no return)
                         tstate = ST_ERROR;
                     }
                     else {
                         cout << got_label << " : " << tok << endl;
-                        tstate = ST_FIRSTCHAR;
+                        tstate = ST_FIRSTCHAR; //Go back to assuming next character is first character of next token
                     }
                     //Else, go to error
                 }
-                else {
+                else { //Unexpected, go to error
                     tstate = ST_ERROR;
                 }
                 break;
             case ST_STRING:
-                if (p_cstate == CHAR_SINGLEQUOTE && cstate == CHAR_WHITESPACE) {
-                    std::string got_label = sc.GetLabel(STRING_TOKEN);
+                if (p_cstate == CHAR_SINGLEQUOTE && cstate == CHAR_WHITESPACE) { //End token
+                    std::string got_label = sc.GetLabel(STRING_TOKEN); //Look up label with string token
                     cout << got_label << " : " << tok << endl;  
-                    tstate = ST_FIRSTCHAR;
+                    tstate = ST_FIRSTCHAR; //Go back to assuming next character is first character of next token
                     //Else, go to error
                 }
                 break;
@@ -166,12 +166,12 @@ string nextToken(Scanner sc, istream& in){
                 else if (cstate == CHAR_DECIMAL) {
                     tstate = ST_REAL_NUM;
                 }
-                else if (cstate == CHAR_WHITESPACE) {
-                    std::string got_label = sc.GetLabel(INTEGER_TOKEN);
+                else if (cstate == CHAR_WHITESPACE) { //End token
+                    std::string got_label = sc.GetLabel(INTEGER_TOKEN); //Look up label with integer token
                     cout << got_label << " : " << tok << endl;  
-                    tstate = ST_FIRSTCHAR;
+                    tstate = ST_FIRSTCHAR; //Go back to assuming next character is first character of next token
                 }
-                else {
+                else { //Unexpected, go to error
                     tstate = ST_ERROR;
                 }
                 break;
@@ -179,19 +179,19 @@ string nextToken(Scanner sc, istream& in){
                 if (cstate == CHAR_DIGIT) {   //Keep parsing, maintain state
                     tstate = ST_REAL_NUM;
                 }
-                else if (cstate == CHAR_WHITESPACE) {
-                    std::string got_label = sc.GetLabel(REAL_NUM_TOKEN);
+                else if (cstate == CHAR_WHITESPACE) { //End token
+                    std::string got_label = sc.GetLabel(REAL_NUM_TOKEN); //Look up label with real number token
                     cout << got_label << " : " << tok << endl;  
-                    tstate = ST_FIRSTCHAR;
+                    tstate = ST_FIRSTCHAR; //Go back to assuming next character is first character of next token
                 }
-                else {
+                else { //Unexpected, go to error
                     tstate = ST_ERROR;
                 }
                 break;
             case ST_ERROR:
                 if (p_cstate == CHAR_WHITESPACE || cstate == CHAR_WHITESPACE) {
                     cout << "TOKEN ERROR at line " << line_no << ": \'" << tok << "\'" << endl;
-                    tstate = ST_FIRSTCHAR;
+                    tstate = ST_FIRSTCHAR; //Go back to assuming next character is first character of next token
                 }
                 break;
             case ST_END:
