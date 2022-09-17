@@ -1,0 +1,35 @@
+
+  IDENTIFIER : Hello
+  IDENTIFIER : world
+       BEGIN : begin
+  IDENTIFIER : begins
+       BEGIN : BEGIN
+       BEGIN : Begin
+       BEGIN : BeGiN
+      STRING : 'Hello, world.'
+      STRING : ''
+      STRING : 'A'
+      STRING : 'B'
+      STRING : ''
+        PLUS : +
+       MINUS : -
+        STAR : *
+       SLASH : /
+COLON_EQUALS : :=
+TOKEN ERROR at line 8: '.'
+       COMMA : ,
+   SEMICOLON : ;
+    TOKEN ERROR at line 8: ':'
+          NE : <>
+          LT : <
+        LTEQ : <=
+        GTEQ : >=
+          GT : >
+      LPAREN : (
+      RPAREN : )
+    LBRACKET : [
+    RBRACKET : ]
+      LBRACE : {
+      RBRACE : }
+       CARAT : ^
+end
