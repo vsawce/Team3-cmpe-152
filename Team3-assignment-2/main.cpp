@@ -65,7 +65,7 @@ std::string tok;
 
 string nextToken(Scanner sc, ifstream& testFile, ofstream& out) {
     c = testFile.get();
-    if (testFile.eof()) {
+    if (c == EOF) {
         cstate = CHAR_EOF;
     }
     else if (c == ' ' || c == '\t' || c == '\n' || c == '\r') {
@@ -193,9 +193,6 @@ string nextToken(Scanner sc, ifstream& testFile, ofstream& out) {
         if (p_cstate == CHAR_WHITESPACE || cstate == CHAR_WHITESPACE) {
             out << "TOKEN ERROR at line " << line_no << ": \'" << tok << "\'" << endl;
             tstate = ST_FIRSTCHAR; //Go back to assuming next character is first character of next token
-        }
-        else {
-            tstate = ST_END; //If invalid, jump to end state
         }
         break;
     case ST_END:

@@ -33,4 +33,14 @@ LBRACE : {
 RBRACE : }
 RBRACE : }
 CARAT : ^
+TOKEN ERROR at line 14: '..'
+TOKEN ERROR at line 16: ':/><'
+INTEGER : 3
+INTEGER : 9
+INTEGER : 2
+INTEGER : 5
+INTEGER : 80
+INTEGER : 23432
+TOKEN ERROR at line 21: '??'
+TOKEN ERROR at line 22: '//'
 end
