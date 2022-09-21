@@ -6,7 +6,7 @@ CC = g++
 #compiler flags
 #-g adds debugging information to the executable file
 #-Wall turns on most, but not all, compiler warnings
-CFLAGS = -g -Wall -std=c++17
+CFLAGS = -g -Wall -std=c++17 -c -Iinc
 
 #linker flags
 #-lm links the math library
@@ -15,8 +15,10 @@ LDFLAGS = -lm
 #the build target executable
 TARGET = main
 
+SOURCES := $(wildcard src/*.cpp)
+
 #the object files that must be created in order to link
-OBJECTS = main.o
+OBJECTS = main.o $(SOURCES)
 
 #the default target
 all: $(TARGET)

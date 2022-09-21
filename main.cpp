@@ -10,6 +10,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include "inc/scanner.h"
 using namespace std;
 
 class Scanner
@@ -362,6 +363,7 @@ int readfile() {
 }
 
 int main(int argc, const char* argv[]) {
+    printhello();
     Scanner sc;
     string word;
 
