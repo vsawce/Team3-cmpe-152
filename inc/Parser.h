@@ -3,9 +3,13 @@
 
 #include <string>
 
-#include "../scanner/scanner.h"
-#include "../../token/token.h"
-#include "../../node/node.h"
+#include "../inc/scanner.h"
+#include "../inc/node.h"
+#include "../Tokens/Token.h"
 
 class Parser
 {
+    public:
+};
+
+#endif
