@@ -6,7 +6,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
-#include "../Tokens/Token.h" 
+#include "../Tokens/Token.h"
 
 using namespace std;
 

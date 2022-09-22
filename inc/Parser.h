@@ -10,9 +10,9 @@
 class Parser
 {
     public:
-     Parser(std::string filename);
-        ~Parser();
-        Node* parse();
+        Parser(Scanner* scanner);
+            ~Parser();
+            Node* parse();
 
     private:
         Scanner* scanner;

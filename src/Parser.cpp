@@ -23,9 +23,9 @@
 //         void check_for_eof();
 // };
 
-Parser::Parser(std::string filename)
+Parser::Parser(Scanner* scanner)
 {
-    scanner = new Scanner();
+    this->scanner = scanner;
 }
 
 Parser::~Parser()

@@ -11,7 +11,7 @@
 
 using namespace std;
 
-int main(int argc, const char* argv[], std::string filename) {
+int main(int argc, const char* argv[]) {
     Scanner sc;
     string word;
 
@@ -35,7 +35,7 @@ int main(int argc, const char* argv[], std::string filename) {
         } 
     }
 
-    Parser parser(filename);
+    Parser parser(&sc);
     Node* parse_tree = parser.parse();
 
     testFile.close();
