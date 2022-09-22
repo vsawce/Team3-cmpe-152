@@ -1,12 +1,12 @@
 #makefile template for C/C++ projects
 
 #compiler
-CC = g++
+CXX = g++
 
 #compiler flags
 #-g adds debugging information to the executable file
 #-Wall turns on most, but not all, compiler warnings
-CFLAGS = -g -Wall -std=c++17 -c
+CXXFLAGS = -g -Wall -std=c++17 -c
 
 #linker flags
 #-lm links the math library
@@ -25,11 +25,11 @@ all: $(TARGET)
 
 #link the target executable
 $(TARGET): $(OBJECTS)
-	$(CC) $(LDFLAGS) $(OBJECTS) -o $(TARGET)
+	$(CXX) $(LDFLAGS) $(OBJECTS) -o $(TARGET)
 
 #compile the source files into object files
 main.o: main.cpp
-	$(CC) $(CFLAGS) -c main.cpp
+	$(CXX) $(CXXFLAGS) -c main.cpp
 
 #remove the build target executable and object files
 clean:
