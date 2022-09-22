@@ -14,7 +14,7 @@ int main(int argc, const char* argv[]) {
     Scanner sc;
     string word;
 
-    std::string inTestFileName = "test-in.txt";
+    std::string inTestFileName = "reference-files/HelloWorld.txt";
     std::string outTestFileName = "test-out.txt";
     //std::string inTestFileName = "test-in-original.txt";
     //std::string outTestFileName = "test-out-original.txt";
@@ -26,7 +26,7 @@ int main(int argc, const char* argv[]) {
     out.open(outTestFileName);
 
     if (!testFile.is_open()) {
-        cout << "Error while opening masterTestCase.txt";
+        cout << "Error while opening " + inTestFileName << endl;
     }
     else {
         while (word != "-1") {
