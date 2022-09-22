@@ -15,7 +15,7 @@ LDFLAGS = -lm
 #the build target executable
 TARGET = main
 
-SOURCES := $(wildcard src/*.cpp) main.cpp
+SOURCES := $(wildcard Tokens/*.cpp Tokens/*/*.cpp src/*.cpp) main.cpp
 
 #the object files that must be created in order to link
 OBJECTS=$(patsubst %.cpp, %.o, $(SOURCES))
