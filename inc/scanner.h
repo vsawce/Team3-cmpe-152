@@ -36,8 +36,8 @@ typedef enum {
 class Scanner
 {
 public:
-    Scanner();
-        Token read();
+    Scanner(ifstream * testFile, ofstream * out);
+    Token read();
     std::string GetLabel(std::string token) const;
     std::string GetToken(std::string label) const;
     void nexttoken()
@@ -50,6 +50,8 @@ private:
     // Column 1 - Label
     ////////////////////
     std::string table[128][2];
+    ifstream * inFile;
+    ofstream * outFile;
 };
 
 std::string nextToken(Scanner sc, ifstream& testFile, ofstream& out);

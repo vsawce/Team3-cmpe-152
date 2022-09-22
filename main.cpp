@@ -12,7 +12,6 @@
 using namespace std;
 
 int main(int argc, const char* argv[]) {
-    Scanner sc;
     string word;
 
     std::string inTestFileName = "reference-files/HelloWorld.txt";
@@ -20,11 +19,13 @@ int main(int argc, const char* argv[]) {
     //std::string inTestFileName = "test-in-original.txt";
     //std::string outTestFileName = "test-out-original.txt";
 
-    ifstream testFile;
+    ifstream testFile(inTestFileName);
     testFile.open(inTestFileName);
     
-    ofstream out;
+    ofstream out(outTestFileName);
     out.open(outTestFileName);
+
+    Scanner sc(&testFile, &out);
 
     if (!testFile.is_open()) {
         cout << "Error while opening " + inTestFileName << endl;

@@ -187,7 +187,7 @@ string nextToken(Scanner sc, ifstream& testFile, ofstream& out) {
 }
 
 //Assign token/labels in constructor
-Scanner::Scanner()
+Scanner::Scanner(ifstream * testFile, ofstream * out)
     : table
 {
     {"and",            "AND"},
@@ -276,7 +276,8 @@ Scanner::Scanner()
     {".",               "PERIOD"}     //Added for compatibility
 }
 {
-
+    this->inFile = testFile;
+    this->outFile = out;
 }
 
 std::string Scanner::GetLabel(std::string token) const
@@ -307,4 +308,180 @@ std::string Scanner::GetToken(std::string label) const
     }
     //Return empty string if not found
     return "";
+}
+
+Token Scanner::read() {
+    c = this->inFile.get();
+    if (c == EOF) {
+        cstate = CHAR_EOF;
+    }
+    else if (c == ' ' || c == '\t' || c == '\n' || c == '\r') {
+        if (c == '\n') {
+            line_no++;
+        }
+        cstate = CHAR_WHITESPACE;
+    }
+    else if (isalpha(c)) {
+        cstate = CHAR_LETTER;
+    }
+    else if (isdigit(c)) {
+        cstate = CHAR_DIGIT;
+    }
+    else if (c == '\'') {
+        cstate = CHAR_SINGLEQUOTE;
+    }
+    else if (c == '.') {
+        cstate = CHAR_DECIMAL;
+    }
+    else if (c == ';') {
+        cstate = CHAR_SEMICOLON;
+    }
+    else {
+        cstate = CHAR_SPECIAL_SYM;
+    }
+    switch (tstate) {
+    case ST_FIRSTCHAR:
+        tok = ""; //Reset token
+        if (cstate == CHAR_LETTER) {
+            tstate = ST_WORD;
+        }
+        else if (cstate == CHAR_SPECIAL_SYM || cstate == CHAR_SEMICOLON || cstate == CHAR_DECIMAL) {
+            tstate = ST_OPERATOR;
+        }
+        else if (cstate == CHAR_SINGLEQUOTE) {
+            tstate = ST_STRING;
+        }
+        else if (cstate == CHAR_DIGIT) {
+            tstate = ST_INTEGER;
+        }
+        else if (cstate == CHAR_EOF) {
+            tstate = ST_END;
+        }
+        else if (cstate == CHAR_WHITESPACE) {
+            tstate = ST_FIRSTCHAR;  //Loop back
+        }
+        else { //Unexpected, go to error
+            tstate = ST_ERROR;
+        }
+        break;
+    case ST_WORD:
+        cout << "wordtok\t" << tok << "\tC=" << c << "\tcstate=" << cstate << endl;
+        if (cstate == CHAR_LETTER || cstate == CHAR_DIGIT) {  //Keep parsing, maintain state
+            tstate = ST_WORD;
+        }
+        else if (cstate == CHAR_WHITESPACE || cstate == CHAR_SEMICOLON || cstate == CHAR_SPECIAL_SYM
+                || cstate == CHAR_DECIMAL) {   //End token
+            std::string got_label = this->GetLabel(tok); //Look up label with token
+            //If token not in lookup table
+            if (got_label == "") {  //Then it means it's an identifier
+                got_label = this->GetLabel(IDENTIFIER_TOKEN); //Look up label with identifier token
+            }
+            this->outFile << got_label << " : " << tok << endl;
+            tstate = ST_FIRSTCHAR; //Go back to assuming next character is first character of next token
+            if (cstate == CHAR_SEMICOLON || cstate == CHAR_SPECIAL_SYM || cstate == CHAR_SINGLEQUOTE || cstate == CHAR_DECIMAL) {
+                got_label = this->GetLabel(std::string(1, c));
+                this->outFile << got_label << " : "<< std::string(1, c) << endl;
+            }
+            //Else, go to error
+        }
+        else { //Unexpected, go to error
+            tstate = ST_ERROR;
+        }
+        break;
+    case ST_OPERATOR:
+        cout << "optok\t" << tok << "\tC=" << c << "\tcstate=" << cstate << endl;
+        if (cstate == CHAR_SPECIAL_SYM) {   //Keep parsing, maintain state. Only check special sym since other important special chars are 1 wide
+            tstate = ST_OPERATOR;
+        }
+        else if (cstate == CHAR_WHITESPACE || cstate == CHAR_SEMICOLON || cstate == CHAR_SPECIAL_SYM
+                || cstate == CHAR_SINGLEQUOTE) { //End token
+            std::string got_label = this->GetLabel(tok); //Look up label with token
+            //If token not in lookup table
+            if (cstate == CHAR_SINGLEQUOTE) {
+                cout << "str" << endl;
+                tstate = ST_STRING;
+            }
+            else if (got_label == "") {  //Then error (because no return)
+                tstate = ST_ERROR;
+            }
+            else {
+                this->outFile << got_label << " : " << tok << endl;
+                tstate = ST_FIRSTCHAR; //Go back to assuming next character is first character of next token
+            }
+            //Else, go to error
+        }
+        else { //Unexpected, go to error
+            tstate = ST_ERROR;
+        }
+        break;
+    case ST_STRING:
+        cout << "strtok\t" << tok << "\tC=" << c << "\tcstate=" << cstate << endl;
+        if (p_cstate == CHAR_SINGLEQUOTE && first_quote) {
+            first_quote = false;
+        }
+        else if (p_cstate == CHAR_SINGLEQUOTE && (cstate == CHAR_WHITESPACE || cstate == CHAR_SPECIAL_SYM)) { //End token
+            std::string got_label = this->GetLabel(STRING_TOKEN); //Look up label with string token
+            cout << got_label << " : " << tok << endl;
+            this->outFile << got_label << " : " << tok << endl;
+            tstate = ST_FIRSTCHAR; //Go back to assuming next character is first character of next token
+            //Else, go to error
+            first_quote = true;
+            if (cstate == CHAR_SPECIAL_SYM) {
+                got_label = this->GetLabel(std::string(1, c));
+                this->outFile << got_label << " : "<< std::string(1, c) << endl;
+            }
+        }
+        break;
+    case ST_INTEGER:
+        if (cstate == CHAR_DIGIT) {   //Keep parsing, maintain state
+            tstate = ST_INTEGER;
+        }
+        else if (cstate == CHAR_DECIMAL) {
+            tstate = ST_REAL_NUM;
+        }
+        else if (cstate == CHAR_WHITESPACE || cstate == CHAR_SEMICOLON) { //End token
+            std::string got_label = this->GetLabel(INTEGER_TOKEN); //Look up label with integer token
+            this->outFile << got_label << " : " << tok << endl;
+            tstate = ST_FIRSTCHAR; //Go back to assuming next character is first character of next token
+            if (cstate == CHAR_SEMICOLON || cstate == CHAR_SPECIAL_SYM) {
+                got_label = this->GetLabel(std::string(1, c));
+                this->outFile << got_label << " : "<< std::string(1, c) << endl;
+            }
+        }
+        else { //Unexpected, go to error
+            tstate = ST_ERROR;
+        }
+        break;
+    case ST_REAL_NUM:
+        if (cstate == CHAR_DIGIT) {   //Keep parsing, maintain state
+            tstate = ST_REAL_NUM;
+        }
+        else if (cstate == CHAR_WHITESPACE) { //End token
+            std::string got_label = this->GetLabel(REAL_NUM_TOKEN); //Look up label with real number token
+            this->outFile << got_label << " : " << tok << endl;
+            tstate = ST_FIRSTCHAR; //Go back to assuming next character is first character of next token
+        }
+        else { //Unexpected, go to error
+            tstate = ST_ERROR;
+        }
+        break;
+    case ST_ERROR:
+        if (p_cstate == CHAR_WHITESPACE || cstate == CHAR_WHITESPACE) {
+            this->outFile << "TOKEN ERROR at line " << line_no << ": \'" << tok << "\'" << endl;
+            tstate = ST_FIRSTCHAR; //Go back to assuming next character is first character of next token
+        }
+        break;
+    case ST_END:
+        this->outFile << "end" << endl;
+        Token to;
+        return to;
+        //return "-1"; //EOF
+    }
+    if (tstate == ST_STRING || cstate != CHAR_WHITESPACE) {
+        tok += c;
+    }
+    p_cstate = cstate;
+    Token to;
+    return to;
+    //return tok;
 }
