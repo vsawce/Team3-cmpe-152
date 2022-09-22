@@ -164,51 +164,177 @@ bool Parser::is_op_token(Token token)
 Node* Parser::expr(int level)   //<expr> -> <hash> + <expr> | <hash> - <expr> <expr> -> <hash> / <expr> | <hash> * <expr> <expr> -> <H>
 {
     level++;
+    Node* node = Node::of(EXPR, level);
+    node->append_child(hash(level));
+    if (OperatorToken::is_addition_token(token)) {
+        node->append_token(token);
+        token = scanner->read();
+        node->append_child(expr(level));
+        return node;
+    } else if (OperatorToken::is_subtraction_token(token)) {
+        node->append_token(token);
+        token = scanner->read();
+        node->append_child(expr(level));
+        return node;
+    } else if (OperatorToken::is_division_token(token)) {
+        node->append_token(token);
+        token = scanner->read();
+        node->append_child(expr(level));
+        return node;
+    } else if (OperatorToken::is_multiplication_token(token)) {
+        node->append_token(token);
+        token = scanner->read();
+        node->append_child(expr(level));
+        return node;
+    }
+    return node;
 }
 
 Node* Parser::hash(int level)   //<hash> -> # <R> | <R>
 {
     level++;
+    Node* node = Node::of(HASH, level);
+    if (OperatorToken::is_negation_token(token)) {
+        node->append_token(token);
+        token = scanner->read();
+        node->append_child(R(level));
+        return node;
+    } else {
+        node->append_child(R(level));
+        return node;
+    }
 }
 
 Node* Parser::R(int level)  //<R> -> ( <expr> ) | Identifier | Integer
 {
     level++;
+    Node* node = Node::of(R_LETTER, level);
+    if (DelimiterToken::is_left_parentheses_token(token)) {
+        token = scanner->read();
+        node->append_child(expr(level));
+        if (DelimiterToken::is_right_parentheses_token(token)) {
+            token = scanner->read();
+            return node;
+        }
+    } else if (token.is_identifier()) {
+        node->append_token(token);
+        token = scanner->read();
+        return node;
+    } else if (token.is_integer()) {
+        node->append_token(token);
+        token = scanner->read();
+        return node;
+    }
+    printError();
 }
 
 Node* Parser::stats(int level)  //<stats> -> <stat> <m_stat>
 {
     level++;
+    Node* node = Node::of(STAT, level);
+    node->append_child(stat(level));
+    node->append_child(m_stat(level));
+    return node;
 }
 
 Node* Parser::m_stat(int level) //<m_stat> -> <stats> | empty
 {
-    level++;
+    if (is_first_of_stats(token)) {
+        level++;
+        Node* node = Node::of(M_STAT, level);
+        node->append_child(stats(level));
+        return node;
+    } else {
+        return NULL;
+    }
 }
 
 Node* Parser::input(int level) //<input> -> read Identifier
 {
-    level++;
+    if (KeywordToken::is_read_token(token)) {
+        level++;
+        Node* node = Node::of(INPUT, level);
+        token = scanner->read();
+        if (token.is_identifier()) {
+            node->append_token(token);
+            token = scanner->read();
+            return node;
+        }
+    }
+    printError();
 }
 
 Node* Parser::out(int level)    //<out> -> print <expr>
 {
     level++;
+    if (KeywordToken::is_print_token(token)) {
+        Node* node = Node::of(OUT, level);
+        token = scanner->read();
+        node->append_child(expr(level));
+        return node;
+    }
+    printError();
 }
 
 Node* Parser::ifstat(int level) //<ifstat> -> if ( <expr> <O> <expr> ) <stat>
 {
     level++;
+    if (KeywordToken::is_if_token(token)) {
+        Node* node = Node::of(IFSTAT, level);
+        token = scanner->read();
+        if (DelimiterToken::is_left_parentheses_token(token)) {
+            token = scanner->read();
+            node->append_child(expr(level));
+            node->append_child(op(level));
+            node->append_child(expr(level));
+            if (DelimiterToken::is_right_parentheses_token(token)) {
+                token = scanner->read();
+                node->append_child(stat(level));
+                return node;
+            }
+        }
+    }
+    printError();
 }
 
 Node* Parser::loop(int level)   //<loop> -> iter ( <expr> <O> <expr> ) <stat>
 {
     level++;
+    if (KeywordToken::is_iter_token(token)) {
+        Node* node = Node::of(LOOP, level);
+        token = scanner->read();
+        if (DelimiterToken::is_left_parentheses_token(token)) {
+            token = scanner->read();
+            node->append_child(expr(level));
+            node->append_child(op(level));
+            node->append_child(expr(level));
+            if (DelimiterToken::is_right_parentheses_token(token)) {
+                token = scanner->read();
+                node->append_child(stat(level));
+                return node;
+            }
+        }
+    }
+    printError();
 }
 
 Node* Parser::assign(int level) //<assign> -> let Identifier = <expr>
 {
     level++;
+    if (KeywordToken::is_let_token(token)) {
+        Node* node = Node::of(ASSIGN, level);
+        token = scanner->read();
+        if (token.is_identifier()) {
+            node->append_token(token);
+            token = scanner->read();
+            if (OperatorToken::is_assignment_token(token)) {
+                token = scanner->read();
+                node->append_child(expr(level));
+                return node;
+            }
+        }
+    }
+    printError();
 }
 
 void Parser::printError()
