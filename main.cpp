@@ -1,16 +1,17 @@
 //
 //  main.cpp
-//  Assignment-2
+//  Assignment-3
 //
-//  Created by Team 3 on 9/7/22.
+//  Created by Team 3 on 9/21/22.
 //
 
 #include <fstream>
 #include "inc/scanner.h"
+#include "inc/Parser.h"
 
 using namespace std;
 
-int main(int argc, const char* argv[]) {
+int main(int argc, const char* argv[], std::string filename) {
     Scanner sc;
     string word;
 
@@ -31,10 +32,11 @@ int main(int argc, const char* argv[]) {
     else {
         while (word != "-1") {
             word = nextToken(sc, testFile, out);
-            //cout << "[" << word << "]"; //link with hash table symbol table for output
-
         } 
     }
+
+    Parser parser(filename);
+    Node* parse_tree = parser.parse();
 
     testFile.close();
     cout << "Program complete, check: " << outTestFileName << endl;
