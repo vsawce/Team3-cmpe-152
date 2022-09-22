@@ -311,7 +311,7 @@ std::string Scanner::GetToken(std::string label) const
 }
 
 Token Scanner::read() {
-    c = this->inFile.get();
+    c = this->inFile->get();
     if (c == EOF) {
         cstate = CHAR_EOF;
     }
@@ -376,11 +376,11 @@ Token Scanner::read() {
             if (got_label == "") {  //Then it means it's an identifier
                 got_label = this->GetLabel(IDENTIFIER_TOKEN); //Look up label with identifier token
             }
-            this->outFile << got_label << " : " << tok << endl;
+            *this->outFile << got_label << " : " << tok << endl;
             tstate = ST_FIRSTCHAR; //Go back to assuming next character is first character of next token
             if (cstate == CHAR_SEMICOLON || cstate == CHAR_SPECIAL_SYM || cstate == CHAR_SINGLEQUOTE || cstate == CHAR_DECIMAL) {
                 got_label = this->GetLabel(std::string(1, c));
-                this->outFile << got_label << " : "<< std::string(1, c) << endl;
+                *this->outFile << got_label << " : "<< std::string(1, c) << endl;
             }
             //Else, go to error
         }
@@ -405,7 +405,7 @@ Token Scanner::read() {
                 tstate = ST_ERROR;
             }
             else {
-                this->outFile << got_label << " : " << tok << endl;
+                *this->outFile << got_label << " : " << tok << endl;
                 tstate = ST_FIRSTCHAR; //Go back to assuming next character is first character of next token
             }
             //Else, go to error
@@ -422,13 +422,13 @@ Token Scanner::read() {
         else if (p_cstate == CHAR_SINGLEQUOTE && (cstate == CHAR_WHITESPACE || cstate == CHAR_SPECIAL_SYM)) { //End token
             std::string got_label = this->GetLabel(STRING_TOKEN); //Look up label with string token
             cout << got_label << " : " << tok << endl;
-            this->outFile << got_label << " : " << tok << endl;
+            *this->outFile << got_label << " : " << tok << endl;
             tstate = ST_FIRSTCHAR; //Go back to assuming next character is first character of next token
             //Else, go to error
             first_quote = true;
             if (cstate == CHAR_SPECIAL_SYM) {
                 got_label = this->GetLabel(std::string(1, c));
-                this->outFile << got_label << " : "<< std::string(1, c) << endl;
+                *this->outFile << got_label << " : "<< std::string(1, c) << endl;
             }
         }
         break;
@@ -441,11 +441,11 @@ Token Scanner::read() {
         }
         else if (cstate == CHAR_WHITESPACE || cstate == CHAR_SEMICOLON) { //End token
             std::string got_label = this->GetLabel(INTEGER_TOKEN); //Look up label with integer token
-            this->outFile << got_label << " : " << tok << endl;
+            *this->outFile << got_label << " : " << tok << endl;
             tstate = ST_FIRSTCHAR; //Go back to assuming next character is first character of next token
             if (cstate == CHAR_SEMICOLON || cstate == CHAR_SPECIAL_SYM) {
                 got_label = this->GetLabel(std::string(1, c));
-                this->outFile << got_label << " : "<< std::string(1, c) << endl;
+                *this->outFile << got_label << " : "<< std::string(1, c) << endl;
             }
         }
         else { //Unexpected, go to error
@@ -458,7 +458,7 @@ Token Scanner::read() {
         }
         else if (cstate == CHAR_WHITESPACE) { //End token
             std::string got_label = this->GetLabel(REAL_NUM_TOKEN); //Look up label with real number token
-            this->outFile << got_label << " : " << tok << endl;
+            *this->outFile << got_label << " : " << tok << endl;
             tstate = ST_FIRSTCHAR; //Go back to assuming next character is first character of next token
         }
         else { //Unexpected, go to error
@@ -467,12 +467,12 @@ Token Scanner::read() {
         break;
     case ST_ERROR:
         if (p_cstate == CHAR_WHITESPACE || cstate == CHAR_WHITESPACE) {
-            this->outFile << "TOKEN ERROR at line " << line_no << ": \'" << tok << "\'" << endl;
+            *this->outFile << "TOKEN ERROR at line " << line_no << ": \'" << tok << "\'" << endl;
             tstate = ST_FIRSTCHAR; //Go back to assuming next character is first character of next token
         }
         break;
     case ST_END:
-        this->outFile << "end" << endl;
+        *this->outFile << "end" << endl;
         Token to;
         return to;
         //return "-1"; //EOF
