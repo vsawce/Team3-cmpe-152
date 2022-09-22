@@ -6,6 +6,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include "../Tokens/Token.h" 
 
 using namespace std;
 
@@ -36,6 +37,7 @@ class Scanner
 {
 public:
     Scanner();
+        Token read();
     std::string GetLabel(std::string token) const;
     std::string GetToken(std::string label) const;
     void nexttoken()

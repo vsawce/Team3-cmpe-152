@@ -2,29 +2,30 @@
 #include <string>
 
 #include "../inc/Parser.h"
+#include "../inc/scanner.h"
 #include "../Tokens/Token.h" 
 
-class Scanner   //special scanner for parser
-{
-public:
-    Scanner(std::string filename);
-        ~Scanner();
-        Token read();
-private:
-    std::ifstream file;
-        int line_number;
-        char next_char;
-        bool is_eof_reached;
-        void check_file(std::ifstream& file, std::string filename);
-        void close_file();
-        void check_for_invalid_character(int state);
-        void check_for_table_error(int state);
-        void check_for_eof();
-};
+// class Scanner   //special scanner for parser
+// {
+// public:
+//     Scanner(std::string filename);
+//         ~Scanner();
+//         Token read();
+// private:
+//     std::ifstream file;
+//         int line_number;
+//         char next_char;
+//         bool is_eof_reached;
+//         void check_file(std::ifstream& file, std::string filename);
+//         void close_file();
+//         void check_for_invalid_character(int state);
+//         void check_for_table_error(int state);
+//         void check_for_eof();
+// };
 
 Parser::Parser(std::string filename)
 {
-    scanner = new Scanner(filename);
+    scanner = new Scanner();
 }
 
 Parser::~Parser()

@@ -1,6 +1,6 @@
 //
 //  main.cpp
-//  Assignment-3
+//  CMPE 152
 //
 //  Created by Team 3 on 9/21/22.
 //
