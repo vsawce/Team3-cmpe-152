@@ -8,6 +8,7 @@ const std::string INTEGER_TOKEN = "(integer)";
 const std::string REAL_NUM_TOKEN = "(real number)";
 
 int line_no = 1;
+bool first_quote = true;
 char c;
 char_state cstate, p_cstate;
 token_state tstate = ST_FIRSTCHAR;
@@ -36,6 +37,9 @@ string nextToken(Scanner sc, ifstream& testFile, ofstream& out) {
     else if (c == '.') {
         cstate = CHAR_DECIMAL;
     }
+    else if (c == ';') {
+        cstate = CHAR_SEMICOLON;
+    }
     else {
         cstate = CHAR_SPECIAL_SYM;
     }
@@ -45,7 +49,7 @@ string nextToken(Scanner sc, ifstream& testFile, ofstream& out) {
         if (cstate == CHAR_LETTER) {
             tstate = ST_WORD;
         }
-        else if (cstate == CHAR_SPECIAL_SYM) {
+        else if (cstate == CHAR_SPECIAL_SYM || cstate == CHAR_SEMICOLON || cstate == CHAR_DECIMAL) {
             tstate = ST_OPERATOR;
         }
         else if (cstate == CHAR_SINGLEQUOTE) {
@@ -65,10 +69,12 @@ string nextToken(Scanner sc, ifstream& testFile, ofstream& out) {
         }
         break;
     case ST_WORD:
+        cout << "wordtok\t" << tok << "\tC=" << c << "\tcstate=" << cstate << endl;
         if (cstate == CHAR_LETTER || cstate == CHAR_DIGIT) {  //Keep parsing, maintain state
             tstate = ST_WORD;
         }
-        else if (cstate == CHAR_WHITESPACE) {   //End token
+        else if (cstate == CHAR_WHITESPACE || cstate == CHAR_SEMICOLON || cstate == CHAR_SPECIAL_SYM
+                || cstate == CHAR_DECIMAL) {   //End token
             std::string got_label = sc.GetLabel(tok); //Look up label with token
             //If token not in lookup table
             if (got_label == "") {  //Then it means it's an identifier
@@ -76,6 +82,10 @@ string nextToken(Scanner sc, ifstream& testFile, ofstream& out) {
             }
             out << got_label << " : " << tok << endl;
             tstate = ST_FIRSTCHAR; //Go back to assuming next character is first character of next token
+            if (cstate == CHAR_SEMICOLON || cstate == CHAR_SPECIAL_SYM || cstate == CHAR_SINGLEQUOTE || cstate == CHAR_DECIMAL) {
+                got_label = sc.GetLabel(std::string(1, c));
+                out << got_label << " : "<< std::string(1, c) << endl;
+            }
             //Else, go to error
         }
         else { //Unexpected, go to error
@@ -83,13 +93,19 @@ string nextToken(Scanner sc, ifstream& testFile, ofstream& out) {
         }
         break;
     case ST_OPERATOR:
-        if (cstate == CHAR_SPECIAL_SYM) {   //Keep parsing, maintain state
+        cout << "optok\t" << tok << "\tC=" << c << "\tcstate=" << cstate << endl;
+        if (cstate == CHAR_SPECIAL_SYM) {   //Keep parsing, maintain state. Only check special sym since other important special chars are 1 wide
             tstate = ST_OPERATOR;
         }
-        else if (cstate == CHAR_WHITESPACE) { //End token
+        else if (cstate == CHAR_WHITESPACE || cstate == CHAR_SEMICOLON || cstate == CHAR_SPECIAL_SYM
+                || cstate == CHAR_SINGLEQUOTE) { //End token
             std::string got_label = sc.GetLabel(tok); //Look up label with token
             //If token not in lookup table
-            if (got_label == "") {  //Then error (because no return)
+            if (cstate == CHAR_SINGLEQUOTE) {
+                cout << "str" << endl;
+                tstate = ST_STRING;
+            }
+            else if (got_label == "") {  //Then error (because no return)
                 tstate = ST_ERROR;
             }
             else {
@@ -103,11 +119,21 @@ string nextToken(Scanner sc, ifstream& testFile, ofstream& out) {
         }
         break;
     case ST_STRING:
-        if (p_cstate == CHAR_SINGLEQUOTE && cstate == CHAR_WHITESPACE) { //End token
+        cout << "strtok\t" << tok << "\tC=" << c << "\tcstate=" << cstate << endl;
+        if (p_cstate == CHAR_SINGLEQUOTE && first_quote) {
+            first_quote = false;
+        }
+        else if (p_cstate == CHAR_SINGLEQUOTE && (cstate == CHAR_WHITESPACE || cstate == CHAR_SPECIAL_SYM)) { //End token
             std::string got_label = sc.GetLabel(STRING_TOKEN); //Look up label with string token
+            cout << got_label << " : " << tok << endl;
             out << got_label << " : " << tok << endl;
             tstate = ST_FIRSTCHAR; //Go back to assuming next character is first character of next token
             //Else, go to error
+            first_quote = true;
+            if (cstate == CHAR_SPECIAL_SYM) {
+                got_label = sc.GetLabel(std::string(1, c));
+                out << got_label << " : "<< std::string(1, c) << endl;
+            }
         }
         break;
     case ST_INTEGER:
@@ -117,10 +143,14 @@ string nextToken(Scanner sc, ifstream& testFile, ofstream& out) {
         else if (cstate == CHAR_DECIMAL) {
             tstate = ST_REAL_NUM;
         }
-        else if (cstate == CHAR_WHITESPACE) { //End token
+        else if (cstate == CHAR_WHITESPACE || cstate == CHAR_SEMICOLON) { //End token
             std::string got_label = sc.GetLabel(INTEGER_TOKEN); //Look up label with integer token
             out << got_label << " : " << tok << endl;
             tstate = ST_FIRSTCHAR; //Go back to assuming next character is first character of next token
+            if (cstate == CHAR_SEMICOLON || cstate == CHAR_SPECIAL_SYM) {
+                got_label = sc.GetLabel(std::string(1, c));
+                out << got_label << " : "<< std::string(1, c) << endl;
+            }
         }
         else { //Unexpected, go to error
             tstate = ST_ERROR;
@@ -233,7 +263,7 @@ Scanner::Scanner()
     {"*=",              "MULTEQUAL"},
     {"/=",              "DIVEQUAL"},
     {"^",               "CARAT"},
-    {";",               "SEMICOLOR"},   //Should be SEMICOLON but assignment says SEMICOLOR???
+    {";",               "SEMICOLON"},   //Should be SEMICOLON but assignment says SEMICOLOR???
     {",",               "COMMA"},
     {"(",               "LPAREN"},
     {")",               "RPAREN"},
@@ -242,7 +272,8 @@ Scanner::Scanner()
     {"{",               "LBRACE"},
     {"}",               "RBRACE"},
     {"(*",              "LCOMMENT"},
-    {"*)",              "RCOMMENT"}
+    {"*)",              "RCOMMENT"},
+    {".",               "PERIOD"}     //Added for compatibility
 }
 {
 
