@@ -13,11 +13,12 @@ typedef enum {
     CHAR_LETTER,        //0
     CHAR_DIGIT,         //1
     CHAR_SINGLEQUOTE,   //2
-    CHAR_DECIMAL,       //3
-    CHAR_SPECIAL_SYM,   //4
-    CHAR_WHITESPACE,    //5
-    CHAR_EOF,           //6
-    CHAR_UNKNOWN        //7
+    CHAR_SEMICOLON,     //3
+    CHAR_DECIMAL,       //4
+    CHAR_SPECIAL_SYM,   //5
+    CHAR_WHITESPACE,    //6
+    CHAR_EOF,           //7
+    CHAR_UNKNOWN        //8
 } char_state;
 
 typedef enum {
