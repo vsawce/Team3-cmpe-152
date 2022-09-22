@@ -1,17 +1,17 @@
 //
 //  main.cpp
-//  Assignment-2
+//  CMPE 152
 //
-//  Created by Team 3 on 9/7/22.
+//  Created by Team 3 on 9/21/22.
 //
 
 #include <fstream>
 #include "inc/scanner.h"
+#include "inc/Parser.h"
 
 using namespace std;
 
 int main(int argc, const char* argv[]) {
-    Scanner sc;
     string word;
 
     std::string inTestFileName = "reference-files/HelloWorld.txt";
@@ -19,11 +19,13 @@ int main(int argc, const char* argv[]) {
     //std::string inTestFileName = "test-in-original.txt";
     //std::string outTestFileName = "test-out-original.txt";
 
-    ifstream testFile;
+    ifstream testFile(inTestFileName);
     testFile.open(inTestFileName);
     
-    ofstream out;
+    ofstream out(outTestFileName);
     out.open(outTestFileName);
+
+    Scanner sc(&testFile, &out);
 
     if (!testFile.is_open()) {
         cout << "Error while opening " + inTestFileName << endl;
@@ -31,10 +33,11 @@ int main(int argc, const char* argv[]) {
     else {
         while (word != "-1") {
             word = nextToken(sc, testFile, out);
-            //cout << "[" << word << "]"; //link with hash table symbol table for output
-
         } 
     }
+
+    Parser parser(&sc);
+    Node* parse_tree = parser.parse();
 
     testFile.close();
     cout << "Program complete, check: " << outTestFileName << endl;
