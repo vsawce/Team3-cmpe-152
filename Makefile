@@ -2,12 +2,12 @@
 
 PROJECTPATH = $(shell pwd)
 
+LIB = /usr/local/lib
+INCLUDE = /usr/local/include
+
 ifneq ($(wildcard $(brew --prefix)/),) 
     LIB = $(shell brew --prefix)/lib
 	INCLUDE = $(shell brew --prefix)/include
-else 
-    LIB = /usr/local/lib
-	INCLUDE = /usr/local/include
 endif
 
 #compiler
