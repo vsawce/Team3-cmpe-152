@@ -2,7 +2,7 @@
 
 PROJECTPATH = $(shell pwd)
 
-ifneq ($(wildcard $(brew --prefix)/.),) 
+ifneq ($(wildcard $(brew --prefix)/),) 
     LIB = $(shell brew --prefix)/lib
 	INCLUDE = $(shell brew --prefix)/include
 else 
@@ -43,7 +43,7 @@ main.o: main.cpp
 
 #remove the build target executable and object files
 clean:
-	rm -f $(TARGET) $(OBJECTS)
+	rm -rf $(TARGET) $(OBJECTS) $(OUT) $(ANTLR_INCLUDES)
 
 #run the program
 run: $(TARGET)
