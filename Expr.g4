@@ -98,7 +98,7 @@ WHILE           : 'while';
 WITH            : 'with';
 XOR             : 'xor';
 INTEGER         : [0-9]+ ;
-REAL            : ('0' .. '9') + (('.' ('0' .. '9') + (EXPONENT)?)? | EXPONENT);
+REAL            : [0-9]* '.' [0-9]+;
 IDENTIFER       : [a-zA-Z]+ ; 
 PLUSOP          : '+';
 MINUSOP         : '-';
@@ -128,9 +128,5 @@ LCOMMENT        : '(*';
 RCOMMENT        : '*)';
 
 DOT             : '.';
-
-fragment EXPONENT
-   : ('E') ('+' | '-')? ('0' .. '9') +
-   ;
 
 WS : [ \t]+ -> skip ; 
