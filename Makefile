@@ -5,7 +5,7 @@ PROJECTPATH = $(shell pwd)
 LIB = /usr/local/lib
 INCLUDE = /usr/local/include
 
-ifneq ($(wildcard $(brew --prefix)/),) 
+ifneq ($(wildcard $(shell brew --prefix)),) 
     LIB = $(shell brew --prefix)/lib
 	INCLUDE = $(shell brew --prefix)/include
 endif
