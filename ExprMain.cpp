@@ -8,27 +8,32 @@ using namespace antlr4;
 using namespace std;
 int main(int argc, const char *args[])
 {
+std::string outFile = "test-out.txt";
+
 ifstream ins;
+ofstream outs(outFile);
 // Create the input stream.
 ins.open(args[1]);
+// outs.open(outFile);
 ANTLRInputStream input(ins);
 // Create a lexer which scans the input stream
 // to create a token stream.
 ExprLexer lexer(&input);
 CommonTokenStream tokens(&lexer);
 // Print the token stream.
-cout << "Tokens:" << endl;
+outs << "Tokens:" << endl;
 tokens.fill();
 for (Token *token : tokens.getTokens())
 {
-std::cout << token->toString() << std::endl;
+outs << token->toString() << std::endl;
 }
 // Create a parser which parses the token stream
 // to create a parse tree.
 ExprParser parser(&tokens);
 tree::ParseTree *tree = parser.program();
 // Print the parse tree in Lisp format.
-cout << endl << "Parse tree (Lisp format):" << endl;
-std::cout << tree->toStringTree(&parser) << endl;
+outs << endl << "Parse tree (Lisp format):" << endl;
+outs << tree->toStringTree(&parser) << endl;
+cout << "Program complete, check: " << outFile << endl;
 return 0;
 }
