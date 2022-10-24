@@ -27,21 +27,50 @@ fragment X:[xX];
 fragment Y:[yY];
 fragment Z:[zZ];
 
-program: statement+ ;  // at least one statement
+program: programHeader compStatement DOT ;  // at least one statement
 
-statement : expr NEWLINE                
-          | IDENTIFER '=' expr NEWLINE        
-          | NEWLINE                   
+programHeader: PROGRAM identifier SEMICOLON;
+
+compStatement : BEGIN statements END;
+
+assignStatement : identifier ASSIGN expr;
+
+ifStatement : IF expr THEN statement (: ELSE statement)?;
+
+whileStatement : WHILE expr DO statement;
+
+forStatement : FOR identifier ASSIGN startValue (TO | DOWNTO) endValue DO statement;
+
+statement : compStatement
+          | assignStatement                   
+          | ifStatement
+          | whileStatement
+          | forStatement
           ;
 
+statements : statement (SEMICOLON (statement)?)*;
+
 expr: expr ('*'|'/') expr   
-    | expr ('+'|'-') expr   
-    | INTEGER                    
-    | IDENTIFER                  
+    | expr ('+'|'-') expr
+    | identifier relationalOperator expr
+    | INTEGER
+    | REAL                    
+    | identifier                  
     | '(' expr ')'         
     ;
 
-NEWLINE     : '\r'? '\n' ;
+relationalOperator: EQUAL
+                  | NE
+                  | LTEQ
+                  | GTEQ
+                  | LT
+                  | GT;
+
+startValue : expr;
+endValue   : expr;
+
+identifier : IDENTIFIER;
+
 STRING_LIT  : '\'' ('\'\'' | ~ ('\''))* '\'';
 
 AND             : A N D;
@@ -97,9 +126,9 @@ VAR             : V A R;
 WHILE           : W H I L E;
 WITH            : W I T H;
 XOR             : X O R;
-INTEGER         : [0-9]+ ;
-REAL            : [0-9]* '.' [0-9]+;
-IDENTIFER       : [a-zA-Z]+ ; 
+INTEGER         : (MINUSOP)? [0-9]+ ;
+REAL            : (MINUSOP)? [0-9]* '.' [0-9]+;
+IDENTIFIER      : [a-zA-Z]+ ; 
 PLUSOP          : '+';
 MINUSOP         : '-';
 MULTOP          : '*';
@@ -129,4 +158,4 @@ RCOMMENT        : '*)';
 
 DOT             : '.';
 
-WS : [ \t]+ -> skip ; 
+WS : [ \t\r\n]+ -> skip ; 
