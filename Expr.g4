@@ -27,79 +27,108 @@ fragment X:[xX];
 fragment Y:[yY];
 fragment Z:[zZ];
 
-program: statement+ ;  // at least one statement
+program: programHeader compStatement DOT EOF;  // at least one statement
 
-statement : expr NEWLINE                
-          | IDENTIFER '=' expr NEWLINE        
-          | NEWLINE                   
+programHeader: PROGRAM identifier SEMICOLON;
+
+compStatement : BEGIN statements END;
+
+assignStatement : identifier ASSIGN expr;
+
+ifStatement : IF expr THEN statement (: ELSE statement)?;
+
+whileStatement : WHILE expr DO statement;
+
+forStatement : FOR identifier ASSIGN startValue (TO | DOWNTO) endValue DO statement;
+
+statement : compStatement
+          | assignStatement                   
+          | ifStatement
+          | whileStatement
+          | forStatement
           ;
 
+statements : statement (SEMICOLON (statement)?)*;
+
 expr: expr ('*'|'/') expr   
-    | expr ('+'|'-') expr   
-    | INTEGER                    
-    | IDENTIFER                  
+    | expr ('+'|'-') expr
+    | identifier relationalOperator expr
+    | INTEGER
+    | REAL                    
+    | identifier                  
     | '(' expr ')'         
     ;
 
-NEWLINE     : '\r'? '\n' ;
+relationalOperator: EQUAL
+                  | NE
+                  | LTEQ
+                  | GTEQ
+                  | LT
+                  | GT;
+
+startValue : expr;
+endValue   : expr;
+
+identifier : IDENTIFIER;
+
 STRING_LIT  : '\'' ('\'\'' | ~ ('\''))* '\'';
 
-AND             : 'and';
-ARRAY           : 'array';
-ASM             : 'asm';
-BEGIN           : 'begin';
-BREAK           : 'break';
-CASE            : 'case';
-CONST           : 'const';
-CONSTRUCTOR     : 'constructor';
-CONTINUE        : 'continue';
-DESTRUCTOR      : 'destructor';
-DIV             : 'div';
-DO              : 'do';
-DOWNTO          : 'downto';
-ELSE            : 'else';
-END             : 'end';
-FALSE           : 'FALSE';
-FILE            : 'file';
-FOR             : 'for';
-FUNCTION        : 'function';
-GOTO            : 'goto';
-IF              : 'if';
-IMPLEMENTATION  : 'implementation';
-IN              : 'in';
-INLINE          : 'inline';
-INTERFACE       : 'interface';
-LABEL           : 'label';
-MOD             : 'mod';
-NIL             : 'nil';
-NOT             : 'not';
-OBJECT          : 'object';
-OF              : 'of';
-ON              : 'on';
-OPERATOR        : 'operator';
-OR              : 'or';
-PACKED          : 'packed';
-PROCEDURE       : 'procedure';
-PROGRAM         : 'program';
-RECORD          : 'record';
-REPEAT          : 'repeat';
-SET             : 'set';
-SHL             : 'shl';
-STRING          : 'string';
-THEN            : 'then';
-TO              : 'to';
-TRUE            : 'true';
-TYPE            : 'type';
-UNIT            : 'unit';
-UNTIL           : 'until';
-USES            : 'uses';
-VAR             : 'var';
-WHILE           : 'while';
-WITH            : 'with';
-XOR             : 'xor';
-INTEGER         : [0-9]+ ;
-REAL            : [0-9]* '.' [0-9]+;
-IDENTIFER       : [a-zA-Z]+ ; 
+AND             : A N D;
+ARRAY           : A R R A Y;
+ASM             : A S M;
+BEGIN           : B E G I N;
+BREAK           : B R E A K;
+CASE            : C A S E;
+CONST           : C O N S T;
+CONSTRUCTOR     : C O N S T R U C T O R;
+CONTINUE        : C O N T I N U E;
+DESTRUCTOR      : D E S T R U C T O R;
+DIV             : D I V;
+DO              : D O;
+DOWNTO          : D O W N T O;
+ELSE            : E L S E;
+END             : E N D;
+FALSE           : F A L S E;
+FILE            : F I L E;
+FOR             : F O R;
+FUNCTION        : F U N C T I O N;
+GOTO            : G O T O;
+IF              : I F;
+IMPLEMENTATION  : I M P L E M E N T A T I O N;
+IN              : I N;
+INLINE          : I N L I N E;
+INTERFACE       : I N T E R F A C E;
+LABEL           : L A B E L;
+MOD             : M O D;
+NIL             : N I L;
+NOT             : N O T;
+OBJECT          : O B J E C T;
+OF              : O F;
+ON              : O N;
+OPERATOR        : O P E R A T O R;
+OR              : O R;
+PACKED          : P A C K E D;
+PROCEDURE       : P R O C E D U R E;
+PROGRAM         : P R O G R A M;
+RECORD          : R E C O R D;
+REPEAT          : R E P E A T;
+SET             : S E T;
+SHL             : S H L;
+STRING          : S T R I N G;
+THEN            : T H E N;
+TO              : T O;
+TRUE            : T R U E;
+TYPE            : T Y P E;
+UNIT            : U N I T;
+UNTIL           : U N T I L;
+USES            : U S E S;
+VAR             : V A R;
+WHILE           : W H I L E;
+WITH            : W I T H;
+XOR             : X O R;
+INTEGER         : (MINUSOP)? [0-9]+ ;
+REAL            : (MINUSOP)? [0-9]* '.' [0-9]+;
+IDENTIFIER      : [a-zA-Z]+ ; 
 PLUSOP          : '+';
 MINUSOP         : '-';
 MULTOP          : '*';
@@ -129,4 +158,4 @@ RCOMMENT        : '*)';
 
 DOT             : '.';
 
-WS : [ \t]+ -> skip ; 
+WS : [ \t\r\n]+ -> skip ; 
