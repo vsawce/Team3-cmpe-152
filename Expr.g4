@@ -27,7 +27,7 @@ fragment X:[xX];
 fragment Y:[yY];
 fragment Z:[zZ];
 
-program: programHeader compStatement DOT ;  // at least one statement
+program: programHeader compStatement DOT EOF;  // at least one statement
 
 programHeader: PROGRAM identifier SEMICOLON;
 
