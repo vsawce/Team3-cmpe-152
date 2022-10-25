@@ -31,19 +31,23 @@ program: programHeader compStatement DOT EOF;  // at least one statement
 
 programHeader: PROGRAM identifier SEMICOLON;
 
-block : (labelDeclarationPart | constantDefinitionPart | typeDefinitionPart | variableDeclarationPart | procedureAndFunctionDeclarationPart | usesUnitsPart | IMPLEMENTATION)* compoundStatement;
-
 compStatement : BEGIN statements END;
 
 assignStatement : identifier ASSIGN expr;
 
 ifStatement : IF expr THEN statement (: ELSE statement)?;
 
+caseStatement : CASE expr OF caseListElement (SEMICOLON caseListElement)* (SEMICOLON ELSE statements)? END;
+
+caseListElement : constList COLON statement;
+
+constList : constant (COMMA constant)*;
+
 whileStatement : WHILE expr DO statement;
 
 forStatement : FOR identifier ASSIGN startValue (TO | DOWNTO) endValue DO statement;
 
-repeatStatement : REPEAT statements UNTIL expression;
+repeatStatement : REPEAT statements UNTIL expr;
 
 conditionalStatement : ifStatement
                      | caseStatement
@@ -55,6 +59,10 @@ repetitiveStatement : whileStatement
                     ;
 
 withStatement : WITH recordVariableList DO statement;
+
+recordVariableList : variable (COMMA variable)*;
+
+variable: (AT identifier | identifier) (LBRACKET expr (COMMA expr)* RBRACKET | LBRACKET2 expr (COMMA expr)* RBRACKET2 | DOT identifier | CARAT)*;
 
 statement : compStatement
           | assignStatement                   
@@ -78,13 +86,19 @@ expr: expr ('*'|'/') expr
     | '(' expr ')'         
     ;
 
+sign : PLUSOP
+     | MINUSOP
+     ;
+
 constant : unsignedNumber
          | sign unsignedNumber
          | IDENTIFIER
          | sign IDENTIFIER
-         | LITERAL
+         | string
          | constantChr
          ;
+
+string : LITERAL;
 
 unsignedNumber : INTEGER
                | REAL
@@ -112,10 +126,10 @@ simpleType : scalarType
 
 scalarType : LPAREN identifierList RPAREN;
 
-subrangeType : costant DOTDOT constant;
+subrangeType : constant DOTDOT constant;
 
 typeIdentifier : identifier
-               | (CHARACTER | BOOLEAN | INTEGER | REAL | STRING)
+               | (CHAR | BOOLEAN | INTEGER | REAL | STRING)
                ;
 
 stringType : STRING LBRACKET (identifier | unsignedNumber) RBRACKET;
@@ -130,8 +144,8 @@ unpackedStructuredType : arrayType
                        | fileType
                        ;
 
-arrayType : ARRAY LBRACK typeList RBRACK OF componentType
-          | ARRAY LBRACK2 typeList RBRACK2 OF componentType
+arrayType : ARRAY LBRACKET typeList RBRACKET OF componentType
+          | ARRAY LBRACKET2 typeList RBRACKET2 OF componentType
           ;
 
 typeList : indexType (COMMA indexType)*;
@@ -142,15 +156,15 @@ componentType : type;
 
 recordType : RECORD fieldList? END;
 
-fieldList : fixedPart (SEMI variantPart)?
+fieldList : fixedPart (SEMICOLON variantPart)?
           | variantPart
           ;
 
-fixedPart : recordSection (SEMI recordSection)*;
+fixedPart : recordSection (SEMICOLON recordSection)*;
 
 recordSection : identifierList COLON type;
 
-variantPart : CASE tag OF variant (SEMI variant)*;
+variantPart : CASE tag OF variant (SEMICOLON variant)*;
 
 tag : identifier COLON typeIdentifier
     | typeIdentifier
@@ -166,7 +180,7 @@ fileType : FILE OF type
          | FILE
          ;
 
-pointerType : POINTER typeIdentifier;
+pointerType : CARAT typeIdentifier;
 
 identifierList
    : identifier (COMMA identifier)*
@@ -187,6 +201,8 @@ BOOLEAN         : B O O L E A N;
 BREAK           : B R E A K;
 CASE            : C A S E;
 CONST           : C O N S T;
+CHAR            : C H A R;
+CHR             : C H R;
 CONSTRUCTOR     : C O N S T R U C T O R;
 CONTINUE        : C O N T I N U E;
 DESTRUCTOR      : D E S T R U C T O R;
@@ -253,6 +269,7 @@ MULTEQUAL       : '*=';
 DIVEQUAL        : '/=';
 CARAT           : '^';
 SEMICOLON       : ';';
+COLON           : ':';
 COMMA           : ',';
 LPAREN          : '(';
 RPAREN          : ')';
@@ -268,8 +285,5 @@ AT              : '@';
 DOT             : '.';
 DOTDOT          : '..';
 
-COMMENT_1       : '(*' .*? '*)' -> skip;
-COMMENT_2       : '{*' .*? '*}' -> skip;
-LITERAL         : '\'' ('\'\'' | ~ ('\''))* '\'';
-fragment EXPONENT : ('E') ('+" | '-')? ('0' .. '9') +;
+LITERAL : '\'' ('\'\'' | ~ ('\''))* '\'';
 WS : [ \t\r\n]+ -> skip ; 
