@@ -1,6 +1,6 @@
 #makefile template for C/C++ projects
 
-PROJECTPATH = $(shell pwd)
+PROJECTPATH = "$(shell pwd)"
 
 LIB = /usr/local/lib
 INCLUDE = /usr/local/include
