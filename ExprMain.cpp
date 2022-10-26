@@ -3,6 +3,7 @@
 #include "antlr4-runtime.h"
 #include "ExprLexer.h"
 #include "ExprParser.h"
+#include "symtab/Predefined.h"
 using namespace antlrcpp;
 using namespace antlr4;
 using namespace std;

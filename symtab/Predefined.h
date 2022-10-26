@@ -11,10 +11,10 @@
 
 #include <vector>
 
-#include "../../Object.h"
-#include "intermediate/symtab/SymtabStack.h"
-#include "intermediate/symtab/SymtabEntry.h"
-#include "intermediate/type/Typespec.h"
+#include "../Object.h"
+#include "SymtabStack.h"
+#include "SymtabEntry.h"
+#include "../type/Typespec.h"
 
 namespace intermediate { namespace symtab {
 

@@ -13,7 +13,7 @@
 
 #include "antlr4-runtime.h"
 
-#include "../../Object.h"
+#include "../Object.h"
 
 // Forward declaration of class Typespec in namespace intermediate::type.
 namespace intermediate { namespace type {
