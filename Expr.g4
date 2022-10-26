@@ -37,15 +37,42 @@ assignStatement : identifier ASSIGN expr;
 
 ifStatement : IF expr THEN statement (: ELSE statement)?;
 
+caseStatement : CASE expr OF caseListElement (SEMICOLON caseListElement)* (SEMICOLON ELSE statements)? END;
+
+caseListElement : constList COLON statement;
+
+constList : constant (COMMA constant)*;
+
 whileStatement : WHILE expr DO statement;
 
 forStatement : FOR identifier ASSIGN startValue (TO | DOWNTO) endValue DO statement;
+
+repeatStatement : REPEAT statements UNTIL expr;
+
+conditionalStatement : ifStatement
+                     | caseStatement
+                     ;
+                    
+repetitiveStatement : whileStatement
+                    | repeatStatement
+                    | forStatement
+                    ;
+
+withStatement : WITH recordVariableList DO statement;
+
+recordVariableList : variable (COMMA variable)*;
+
+variable: (AT identifier | identifier) (LBRACKET expr (COMMA expr)* RBRACKET | LBRACKET2 expr (COMMA expr)* RBRACKET2 | DOT identifier | CARAT)*;
 
 statement : compStatement
           | assignStatement                   
           | ifStatement
           | whileStatement
           | forStatement
+          | repeatStatement
+          | conditionalStatement
+          | repetitiveStatement
+          | withStatement
           ;
 
 statements : statement (SEMICOLON (statement)?)*;
@@ -59,12 +86,105 @@ expr: expr ('*'|'/') expr
     | '(' expr ')'         
     ;
 
+sign : PLUSOP
+     | MINUSOP
+     ;
+
+constant : unsignedNumber
+         | sign unsignedNumber
+         | IDENTIFIER
+         | sign IDENTIFIER
+         | string
+         | constantChr
+         ;
+
+string : LITERAL;
+
+unsignedNumber : INTEGER
+               | REAL
+               ;
+
+constantChr : CHR LPAREN REAL RPAREN;
+
 relationalOperator: EQUAL
                   | NE
                   | LTEQ
                   | GTEQ
                   | LT
                   | GT;
+
+type : simpleType
+     | structuredTyped
+     | pointerType
+     ;
+
+simpleType : scalarType
+           | subrangeType
+           | typeIdentifier
+           | stringType
+           ;
+
+scalarType : LPAREN identifierList RPAREN;
+
+subrangeType : constant DOTDOT constant;
+
+typeIdentifier : identifier
+               | (CHAR | BOOLEAN | INTEGER | REAL | STRING)
+               ;
+
+stringType : STRING LBRACKET (identifier | unsignedNumber) RBRACKET;
+
+structuredTyped : PACKED unpackedStructuredType
+                | unpackedStructuredType
+                ;
+
+unpackedStructuredType : arrayType
+                       | recordType
+                       | setType
+                       | fileType
+                       ;
+
+arrayType : ARRAY LBRACKET typeList RBRACKET OF componentType
+          | ARRAY LBRACKET2 typeList RBRACKET2 OF componentType
+          ;
+
+typeList : indexType (COMMA indexType)*;
+
+indexType : simpleType;
+
+componentType : type;
+
+recordType : RECORD fieldList? END;
+
+fieldList : fixedPart (SEMICOLON variantPart)?
+          | variantPart
+          ;
+
+fixedPart : recordSection (SEMICOLON recordSection)*;
+
+recordSection : identifierList COLON type;
+
+variantPart : CASE tag OF variant (SEMICOLON variant)*;
+
+tag : identifier COLON typeIdentifier
+    | typeIdentifier
+    ;
+
+variant : constList COLON LPAREN fieldList RPAREN;
+
+setType : SET OF baseType;
+
+baseType : simpleType;
+
+fileType : FILE OF type
+         | FILE
+         ;
+
+pointerType : CARAT typeIdentifier;
+
+identifierList
+   : identifier (COMMA identifier)*
+   ;
 
 startValue : expr;
 endValue   : expr;
@@ -77,9 +197,12 @@ AND             : A N D;
 ARRAY           : A R R A Y;
 ASM             : A S M;
 BEGIN           : B E G I N;
+BOOLEAN         : B O O L E A N;
 BREAK           : B R E A K;
 CASE            : C A S E;
 CONST           : C O N S T;
+CHAR            : C H A R;
+CHR             : C H R;
 CONSTRUCTOR     : C O N S T R U C T O R;
 CONTINUE        : C O N T I N U E;
 DESTRUCTOR      : D E S T R U C T O R;
@@ -146,16 +269,21 @@ MULTEQUAL       : '*=';
 DIVEQUAL        : '/=';
 CARAT           : '^';
 SEMICOLON       : ';';
+COLON           : ':';
 COMMA           : ',';
 LPAREN          : '(';
 RPAREN          : ')';
 LBRACKET        : '[';
 RBRACKET        : ']';
+LBRACKET2       : '(.';
+RBRACKET2       : '.)';
 LBRACE          : '{';
 RBRACE          : '}';
 LCOMMENT        : '(*';
 RCOMMENT        : '*)';
-
+AT              : '@';
 DOT             : '.';
+DOTDOT          : '..';
 
+LITERAL : '\'' ('\'\'' | ~ ('\''))* '\'';
 WS : [ \t\r\n]+ -> skip ; 

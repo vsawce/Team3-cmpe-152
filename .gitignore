@@ -4,3 +4,4 @@ main
 .vscode/
 target/
 prog.out
+.antlr/
