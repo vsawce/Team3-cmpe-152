@@ -27,11 +27,24 @@ fragment X:[xX];
 fragment Y:[yY];
 fragment Z:[zZ];
 
-program: programHeader compStatement DOT EOF;  // at least one statement
+program: programHeader (variableDeclarationHeader|constantDeclarationHeader|typeDeclarationHeader)*
+        compStatement DOT EOF;  // at least one statement
 
 programHeader: PROGRAM identifier SEMICOLON;
 
 compStatement : BEGIN statements END;
+
+variableDeclarationHeader: VAR (variableDeclaration SEMICOLON)+ ;
+
+variableDeclaration: identifierList COLON type;
+
+constantDeclarationHeader: CONST (constantDeclaration SEMICOLON)+ ;
+
+constantDeclaration: identifier EQUAL constant;
+
+typeDeclarationHeader: TYPE (typeDeclaration SEMICOLON) +;
+
+typeDeclaration: identifier EQUAL type;
 
 assignStatement : identifier ASSIGN expr;
 

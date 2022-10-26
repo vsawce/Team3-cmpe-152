@@ -1,4 +1,17 @@
 PROGRAM HelloWorld;
+
+VAR
+    i : integer;
+    j : integer;
+
+CONST
+    euler = 2.71828;
+    zero = 0;
+
+TYPE
+    int = integer;
+    day = string;
+
 BEGIN
     i := 0;
     j := 0;
