@@ -5,3 +5,5 @@ main
 target/
 prog.out
 .antlr/
+test-out.txt
+*.dSYM
