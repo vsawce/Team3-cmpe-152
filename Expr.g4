@@ -36,8 +36,6 @@ compStatement : BEGIN statements END;
 
 variableDeclarationHeader: VAR (variableDeclaration SEMICOLON)+ ;
 
-variableDeclaration: identifierList COLON type;
-
 constantDeclarationHeader: CONST (constantDeclaration SEMICOLON)+ ;
 
 constantDeclaration: identifier EQUAL constant;
@@ -195,9 +193,7 @@ fileType : FILE OF type
 
 pointerType : CARAT typeIdentifier;
 
-identifierList
-   : identifier (COMMA identifier)*
-   ;
+identifierList : identifier (COMMA identifier)*;
 
 startValue : expr;
 endValue   : expr;
@@ -205,6 +201,85 @@ endValue   : expr;
 identifier : IDENTIFIER;
 
 STRING_LIT  : '\'' ('\'\'' | ~ ('\''))* '\'';
+
+block
+   : (labelDeclarationPart 
+   | constantDefinitionPart 
+   | typeDefinitionPart 
+   | variableDeclarationPart 
+   | procedureAndFunctionDeclarationPart 
+   | usesUnitsPart 
+   | IMPLEMENTATION)* compoundStatement;
+
+constantDefinitionPart : CONST (constantDefinition SEMI) +;
+
+constantDefinition : identifier EQUAL constant;
+
+labelDeclarationPart : LABEL label (COMMA label)* SEMI;
+
+label : unsignedInteger;
+
+typeDefinitionPart : TYPE (typeDefinition SEMI) +;
+
+typeDefinition : identifier EQUAL (type_ | functionType | procedureType);
+
+variableDeclarationPart : VAR variableDeclaration (SEMI variableDeclaration)* SEMI;
+
+variableDeclaration: identifierList COLON type;
+
+procedureAndFunctionDeclarationPart : procedureOrFunctionDeclaration SEMI;
+
+procedureOrFunctionDeclaration : procedureDeclaration
+                               | functionDeclaration
+                               ;
+                            
+procedureDeclaration : PROCEDURE identifier (formalParameterList)? SEMI block;
+
+formalParameterList : LPAREN formalParameterSection (SEMI formalParameterSection)* RPAREN;
+
+formalParameterSection : parameterGroup
+                       | VAR parameterGroup
+                       | FUNCTION parameterGroup
+                       | PROCEDURE parameterGroup
+                       ;
+
+parameterGroup : identifierList COLON typeIdentifier;
+
+compoundStatement : BEGIN statements END;
+
+usesUnitsPart : USES identifierList SEMI;
+
+structuredStatement : compoundStatement
+                    | conditionalStatement
+                    | repetitiveStatement
+                    | withStatement
+                    ;
+
+unlabelledStatement : simpleStatement
+                    | structuredStatement
+                    ;
+
+simpleStatement : assignmentStatement
+                | procedureStatement
+                | gotoStatement
+                | emptyStatement_
+                ;
+
+assignmentStatement : variable ASSIGN expression;
+
+procedureStatement : identifier (LPAREN parameterList RPAREN)?;
+
+parameterList : actualParameter (COMMA actualParameter)*;
+
+actualParameter : expression parameterwidth*;
+
+gotoStatement : GOTO label;
+
+emptyStatement_ :;
+
+empty_ :/* empty */;
+
+parameterwidth : ':' expression;
 
 AND             : A N D;
 ARRAY           : A R R A Y;
