@@ -9,6 +9,12 @@ using namespace antlrcpp;
 using namespace antlr4;
 using namespace std;
 
+template <typename Kind>
+constexpr auto to_underlying(Kind k) noexcept
+{
+    return static_cast<std::underlying_type_t<Kind>>(k);
+}
+
 std::string lispToXml(ifstream &insLisp) {
     char c;
     int level = -1;
@@ -69,6 +75,7 @@ void lispToSymtab(ifstream &insLisp) {
     //int level = -1;
     //std::string xmlString = "";
     std::string token = "";
+    intermediate::symtab::Kind kind;
     bool isType = false;
     bool nextIsIdentifier = false;
     //bool firstToken = false;
@@ -77,20 +84,36 @@ void lispToSymtab(ifstream &insLisp) {
     while (insLisp >> noskipws >> c) { // Not EOF
         bool levelChange = false;
         if (token == "programHeader") {
-            isType = true;
+            kind = intermediate::symtab::Kind::PROGRAM;
         }
-        else if (token == "identifier") {
+        else if (token == "procedureDeclarationHeader" && c == ' ') {
+            kind = intermediate::symtab::Kind::FUNCTION;
+            //New table
+        }
+        else if (token == "functionDeclarationHeader" && c == ' ') {
+            kind = intermediate::symtab::Kind::FUNCTION;
+            //New table
+        }
+        else if (token == "variableDeclaration" && c == ' ') {
+            kind = intermediate::symtab::Kind::VARIABLE;
+        }
+        else if (token == "constantDeclaration" && c == ' ') {
+            kind = intermediate::symtab::Kind::CONSTANT;
+        } 
+        else if (token == "typeDeclaration" && c == ' ') {
+            kind = intermediate::symtab::Kind::TYPE;
+        }
+        else if (token == "identifier" && c == ' ') {
             nextIsIdentifier = true;
         }
         if (c == '(') {
         }
         else if (c == ')') {
             if (nextIsIdentifier) {
-                cout << "Put " << token << " on table" << endl;
-                nextIsIdentifier = false;
-
-                //st = sts->getLocalSymtab();
-                st->enter(token, intermediate::symtab::Kind::VARIABLE); //Kind Variable for now
+                nextIsIdentifier = false;                
+                if (st->lookup(token) == nullptr) //Entry does not exist
+                    st->enter(token, kind); //Kind Variable for now
+                kind = intermediate::symtab::Kind::UNDEFINED;
             }
         }
         else if (c == ' ') {
@@ -104,7 +127,7 @@ void lispToSymtab(ifstream &insLisp) {
     }
     //vector<SymtabEntry *> sortedE = st->sortedEntries();
     for (int i = 0; i < st->sortedEntries().size(); i++) { //For each entry
-        cout << i << " " << st->sortedEntries()[i]->getName() << endl;
+        cout << i << " " << st->sortedEntries()[i]->getName() << "\t\t" << intermediate::symtab::KIND_STRINGS[to_underlying(st->sortedEntries()[i]->getKind())] << "\t\t"  <<endl;
     }
 }
 

@@ -27,7 +27,7 @@ fragment X:[xX];
 fragment Y:[yY];
 fragment Z:[zZ];
 
-program: programHeader (variableDeclarationHeader|constantDeclarationHeader|typeDeclarationHeader)*
+program: programHeader (variableDeclarationHeader|constantDeclarationHeader|typeDeclarationHeader|procedureOrFunctionDeclarationHeader)*
         compStatement DOT EOF;  // at least one statement
 
 programHeader: PROGRAM identifier SEMICOLON;
@@ -231,7 +231,7 @@ functionType : FUNCTION (formalParameterList)? COLON resultType;
 
 resultType : typeIdentifier;
 
-functionDeclaration : FUNCTION identifier (formalParameterList)? COLON resultType SEMICOLON block;
+functionDeclarationHeader : FUNCTION identifier (formalParameterList)? COLON resultType SEMICOLON block;
 
 procedureType : PROCEDURE (formalParameterList)?;
 
@@ -239,13 +239,13 @@ variableDeclarationPart : VAR variableDeclaration (SEMICOLON variableDeclaration
 
 variableDeclaration: identifierList COLON type;
 
-procedureAndFunctionDeclarationPart : procedureOrFunctionDeclaration SEMICOLON;
+procedureAndFunctionDeclarationPart : procedureOrFunctionDeclarationHeader SEMICOLON;
 
-procedureOrFunctionDeclaration : procedureDeclaration
-                               | functionDeclaration
-                               ;
+procedureOrFunctionDeclarationHeader : procedureDeclarationHeader
+                                    | functionDeclarationHeader
+                                    ;
                             
-procedureDeclaration : PROCEDURE identifier (formalParameterList)? SEMICOLON block;
+procedureDeclarationHeader : PROCEDURE identifier (formalParameterList)? SEMICOLON block;
 
 formalParameterList : LPAREN formalParameterSection (SEMICOLON formalParameterSection)* RPAREN;
 

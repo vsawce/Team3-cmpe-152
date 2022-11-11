@@ -12,6 +12,18 @@ TYPE
     int = integer;
     day = string;
 
+function max(no1: integer; no2: integer): integer;
+    var
+        result: integer;
+    begin
+        if (num1 > num2) then
+            result := num1
+        
+        else
+            result := num2;
+        max := result;
+end;
+
 BEGIN
     i := 0;
     j := 0;
