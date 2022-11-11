@@ -7,3 +7,5 @@ prog.out
 .antlr/
 test-out.txt
 *.dSYM
+test-out-tree-lisp.txt
+test-out-tree.xml
