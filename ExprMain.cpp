@@ -62,6 +62,52 @@ std::string lispToXml(ifstream &insLisp) {
     return xmlString;
 }
 
+void lispToSymtab(ifstream &insLisp) {
+    char c;
+    intermediate::symtab::SymtabStack *sts = new intermediate::symtab::SymtabStack();
+    intermediate::symtab::Symtab *st = sts->getLocalSymtab();
+    //int level = -1;
+    //std::string xmlString = "";
+    std::string token = "";
+    bool isType = false;
+    bool nextIsIdentifier = false;
+    //bool firstToken = false;
+    //list<std::string> strStack;
+
+    while (insLisp >> noskipws >> c) { // Not EOF
+        bool levelChange = false;
+        if (token == "programHeader") {
+            isType = true;
+        }
+        else if (token == "identifier") {
+            nextIsIdentifier = true;
+        }
+        if (c == '(') {
+        }
+        else if (c == ')') {
+            if (nextIsIdentifier) {
+                cout << "Put " << token << " on table" << endl;
+                nextIsIdentifier = false;
+
+                //st = sts->getLocalSymtab();
+                st->enter(token, intermediate::symtab::Kind::VARIABLE); //Kind Variable for now
+            }
+        }
+        else if (c == ' ') {
+            token = "";
+        }
+        else {
+            token += c;
+        }
+        //append to list
+        //cout << token << endl;
+    }
+    //vector<SymtabEntry *> sortedE = st->sortedEntries();
+    for (int i = 0; i < st->sortedEntries().size(); i++) { //For each entry
+        cout << i << " " << st->sortedEntries()[i]->getName() << endl;
+    }
+}
+
 int main(int argc, const char *args[])
 {
 std::string outFile = "test-out.txt";
@@ -92,16 +138,18 @@ outs << token->toString() << std::endl;
 ExprParser parser(&tokens);
 tree::ParseTree *tree = parser.program();
 
-intermediate::symtab::SymtabStack *sts = new intermediate::symtab::SymtabStack();
-
+cout << endl << "-----" << endl;
 // Print the parse tree in Lisp format.
 outs << endl << "Parse tree (Lisp format):" << endl;
 outs << tree->toStringTree(&parser) << endl;
 outsLisp << tree->toStringTree(&parser) << endl;
 
 ifstream insLisp(lispFile);
+ifstream insLisp2(lispFile);
+
 
 outsXml << lispToXml(insLisp) << endl;
+lispToSymtab(insLisp2);
 
 cout << "Program complete, check: " << outFile << ", " << lispFile << ", " << xmlFile << endl;
 return 0;

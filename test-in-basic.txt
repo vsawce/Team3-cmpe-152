@@ -1,0 +1,6 @@
+PROGRAM HelloWorld;
+
+BEGIN
+    i := 0;
+    j := 0;
+END.
