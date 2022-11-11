@@ -135,7 +135,7 @@ int main(int argc, const char *args[])
 {
 std::string outFile = "test-out.txt";
 std::string lispFile = "test-out-tree-lisp.txt";
-std::string xmlFile = "test-out-tree-xml.xml";
+std::string xmlFile = "test-out-tree.xml";
 
 ifstream ins;
 ofstream outs(outFile);
