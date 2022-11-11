@@ -1,18 +1,146 @@
 #include <iostream>
 #include <fstream>
+#include <list>
 #include "antlr4-runtime.h"
 #include "ExprLexer.h"
 #include "ExprParser.h"
-#include "symtab/Predefined.h"
+#include "symtab/SymtabStack.h"
 using namespace antlrcpp;
 using namespace antlr4;
 using namespace std;
+
+template <typename Kind>
+constexpr auto to_underlying(Kind k) noexcept
+{
+    return static_cast<std::underlying_type_t<Kind>>(k);
+}
+
+std::string lispToXml(ifstream &insLisp) {
+    char c;
+    int level = -1;
+    std::string xmlString = "";
+    std::string token = "";
+    bool firstToken = false;
+    list<std::string> strStack;
+
+    while (insLisp >> noskipws >> c) { // Not EOF
+        bool levelChange = false;
+        if (c == '(') {
+            firstToken = true;
+            level++;
+            levelChange = true;
+            xmlString += "\n";
+        }
+        else if (c == ')') {
+            levelChange = true;
+            xmlString += token + "\n";
+            for (int i = 0; i < level; i++) {
+                xmlString += "\t";
+            }
+            level--;
+            xmlString += "</" + strStack.back() + ">\n";
+            token = "";
+            strStack.pop_back();
+            //xmlString += "\n";
+        }
+        else if (c == ' ') {
+            for (int i = 0; i < level; i++) {
+                xmlString += "\t";
+            }
+            if (firstToken) {
+                xmlString += "<" + token + ">";
+                strStack.push_back(token);
+                firstToken = false;
+            }
+            else {
+                xmlString += token;
+            }
+            token = "";
+        }
+        else {
+            token += c;
+        }
+        if (levelChange) {
+            //xmlString += "\n";
+        }
+        //append to list
+    }
+    return xmlString;
+}
+
+void lispToSymtab(ifstream &insLisp, ofstream &outsSymtab) {
+    char c;
+    intermediate::symtab::SymtabStack *sts = new intermediate::symtab::SymtabStack();
+    intermediate::symtab::Symtab *st = sts->getLocalSymtab();
+    //int level = -1;
+    //std::string xmlString = "";
+    std::string token = "";
+    intermediate::symtab::Kind kind;
+    bool isType = false;
+    bool nextIsIdentifier = false;
+    //bool firstToken = false;
+    //list<std::string> strStack;
+
+    while (insLisp >> noskipws >> c) { // Not EOF
+        bool levelChange = false;
+        if (token == "programHeader") {
+            kind = intermediate::symtab::Kind::PROGRAM;
+        }
+        else if (token == "procedureDeclarationHeader" && c == ' ') {
+            kind = intermediate::symtab::Kind::FUNCTION;
+            //New table
+        }
+        else if (token == "functionDeclarationHeader" && c == ' ') {
+            kind = intermediate::symtab::Kind::FUNCTION;
+            //New table
+        }
+        else if (token == "variableDeclaration" && c == ' ') {
+            kind = intermediate::symtab::Kind::VARIABLE;
+        }
+        else if (token == "constantDeclaration" && c == ' ') {
+            kind = intermediate::symtab::Kind::CONSTANT;
+        } 
+        else if (token == "typeDeclaration" && c == ' ') {
+            kind = intermediate::symtab::Kind::TYPE;
+        }
+        else if (token == "identifier" && c == ' ') {
+            nextIsIdentifier = true;
+        }
+        if (c == '(') {
+        }
+        else if (c == ')') {
+            if (nextIsIdentifier) {
+                nextIsIdentifier = false;                
+                if (st->lookup(token) == nullptr) //Entry does not exist
+                    st->enter(token, kind); //Kind Variable for now
+                kind = intermediate::symtab::Kind::UNDEFINED;
+            }
+        }
+        else if (c == ' ') {
+            token = "";
+        }
+        else {
+            token += c;
+        }
+        //append to list
+        //cout << token << endl;
+    }
+    //vector<SymtabEntry *> sortedE = st->sortedEntries();
+    for (int i = 0; i < st->sortedEntries().size(); i++) { //For each entry
+        outsSymtab << i << " " << st->sortedEntries()[i]->getName() << "\t\t" << intermediate::symtab::KIND_STRINGS[to_underlying(st->sortedEntries()[i]->getKind())] << "\t\t"  <<endl;
+    }
+}
+
 int main(int argc, const char *args[])
 {
 std::string outFile = "test-out.txt";
+std::string lispFile = "test-out-tree-lisp.txt";
+std::string xmlFile = "test-out-tree-xml.xml";
 
 ifstream ins;
 ofstream outs(outFile);
+ofstream outsLisp(lispFile);
+ofstream outsXml(xmlFile);
 // Create the input stream.
 ins.open(args[1]);
 // outs.open(outFile);
@@ -32,9 +160,21 @@ outs << token->toString() << std::endl;
 // to create a parse tree.
 ExprParser parser(&tokens);
 tree::ParseTree *tree = parser.program();
+
+cout << endl << "-----" << endl;
 // Print the parse tree in Lisp format.
 outs << endl << "Parse tree (Lisp format):" << endl;
 outs << tree->toStringTree(&parser) << endl;
-cout << "Program complete, check: " << outFile << endl;
+outsLisp << tree->toStringTree(&parser) << endl;
+
+ifstream insLisp(lispFile);
+ifstream insLisp2(lispFile);
+
+
+outsXml << lispToXml(insLisp) << endl;
+outs << endl;
+lispToSymtab(insLisp2, outs);
+
+cout << "Program complete, check: " << outFile << ", " << lispFile << ", " << xmlFile << endl;
 return 0;
 }

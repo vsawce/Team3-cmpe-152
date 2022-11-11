@@ -1,5 +1,11 @@
 PROGRAM HelloWorld;
 
+TYPE
+    int = integer;
+    day = string;
+    vector = array [ 1..25] of real;
+    vectorOfVector = array [ 1..25] of vector;
+
 VAR
     i : integer;
     j : integer;
@@ -8,9 +14,16 @@ CONST
     euler = 2.71828;
     zero = 0;
 
-TYPE
-    int = integer;
-    day = string;
+function max(no1: integer; no2: integer): integer;
+    var
+        result: integer;
+    begin
+        if (num1 > num2) then
+            result := num1
+        else
+            result := num2;
+        max := result;
+end;
 
 BEGIN
     i := 0;
