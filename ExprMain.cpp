@@ -3,7 +3,7 @@
 #include "antlr4-runtime.h"
 #include "ExprLexer.h"
 #include "ExprParser.h"
-#include "symtab/Predefined.h"
+#include "symtab/SymtabStack.h"
 using namespace antlrcpp;
 using namespace antlr4;
 using namespace std;
@@ -32,6 +32,9 @@ outs << token->toString() << std::endl;
 // to create a parse tree.
 ExprParser parser(&tokens);
 tree::ParseTree *tree = parser.program();
+
+intermediate::symtab::SymtabStack *sts = new intermediate::symtab::SymtabStack();
+
 // Print the parse tree in Lisp format.
 outs << endl << "Parse tree (Lisp format):" << endl;
 outs << tree->toStringTree(&parser) << endl;
