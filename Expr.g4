@@ -36,8 +36,6 @@ compStatement : BEGIN statements END;
 
 variableDeclarationHeader: VAR (variableDeclaration SEMICOLON)+ ;
 
-variableDeclaration: identifierList COLON type;
-
 constantDeclarationHeader: CONST (constantDeclaration SEMICOLON)+ ;
 
 constantDeclaration: identifier EQUAL constant;
@@ -124,7 +122,9 @@ relationalOperator: EQUAL
                   | LTEQ
                   | GTEQ
                   | LT
-                  | GT;
+                  | GT
+                  | IN
+                  ;
 
 type : simpleType
      | structuredTyped
@@ -195,9 +195,7 @@ fileType : FILE OF type
 
 pointerType : CARAT typeIdentifier;
 
-identifierList
-   : identifier (COMMA identifier)*
-   ;
+identifierList : identifier (COMMA identifier)*;
 
 startValue : expr;
 endValue   : expr;
@@ -205,6 +203,95 @@ endValue   : expr;
 identifier : IDENTIFIER;
 
 STRING_LIT  : '\'' ('\'\'' | ~ ('\''))* '\'';
+
+block
+   : (labelDeclarationPart 
+   | constantDefinitionPart 
+   | typeDefinitionPart 
+   | variableDeclarationPart 
+   | procedureAndFunctionDeclarationPart 
+   | usesUnitsPart 
+   | IMPLEMENTATION)* compoundStatement;
+
+constantDefinitionPart : CONST (constantDefinition SEMICOLON) +;
+
+constantDefinition : identifier EQUAL constant;
+
+labelDeclarationPart : LABEL label (COMMA label)* SEMICOLON;
+
+label : unsignedInteger;
+
+unsignedInteger : INTEGER;
+
+typeDefinitionPart : TYPE (typeDefinition SEMICOLON) +;
+
+typeDefinition : identifier EQUAL (type | functionType | procedureType);
+
+functionType : FUNCTION (formalParameterList)? COLON resultType;
+
+resultType : typeIdentifier;
+
+functionDeclaration : FUNCTION identifier (formalParameterList)? COLON resultType SEMICOLON block;
+
+procedureType : PROCEDURE (formalParameterList)?;
+
+variableDeclarationPart : VAR variableDeclaration (SEMICOLON variableDeclaration)* SEMICOLON;
+
+variableDeclaration: identifierList COLON type;
+
+procedureAndFunctionDeclarationPart : procedureOrFunctionDeclaration SEMICOLON;
+
+procedureOrFunctionDeclaration : procedureDeclaration
+                               | functionDeclaration
+                               ;
+                            
+procedureDeclaration : PROCEDURE identifier (formalParameterList)? SEMICOLON block;
+
+formalParameterList : LPAREN formalParameterSection (SEMICOLON formalParameterSection)* RPAREN;
+
+formalParameterSection : parameterGroup
+                       | VAR parameterGroup
+                       | FUNCTION parameterGroup
+                       | PROCEDURE parameterGroup
+                       ;
+
+parameterGroup : identifierList COLON typeIdentifier;
+
+compoundStatement : BEGIN statements END;
+
+usesUnitsPart : USES identifierList SEMICOLON;
+
+structuredStatement : compoundStatement
+                    | conditionalStatement
+                    | repetitiveStatement
+                    | withStatement
+                    ;
+
+unlabelledStatement : simpleStatement
+                    | structuredStatement
+                    ;
+
+simpleStatement : assignmentStatement
+                | procedureStatement
+                | gotoStatement
+                | emptyStatement_
+                ;
+
+assignmentStatement : variable ASSIGN expr;
+
+procedureStatement : identifier (LPAREN parameterList RPAREN)?;
+
+parameterList : actualParameter (COMMA actualParameter)*;
+
+actualParameter : expr parameterwidth*;
+
+gotoStatement : GOTO label;
+
+emptyStatement_ :;
+
+empty_ :/* empty */;
+
+parameterwidth : ':' expr;
 
 AND             : A N D;
 ARRAY           : A R R A Y;
