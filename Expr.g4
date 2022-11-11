@@ -122,7 +122,9 @@ relationalOperator: EQUAL
                   | LTEQ
                   | GTEQ
                   | LT
-                  | GT;
+                  | GT
+                  | IN
+                  ;
 
 type : simpleType
      | structuredTyped
@@ -211,31 +213,41 @@ block
    | usesUnitsPart 
    | IMPLEMENTATION)* compoundStatement;
 
-constantDefinitionPart : CONST (constantDefinition SEMI) +;
+constantDefinitionPart : CONST (constantDefinition SEMICOLON) +;
 
 constantDefinition : identifier EQUAL constant;
 
-labelDeclarationPart : LABEL label (COMMA label)* SEMI;
+labelDeclarationPart : LABEL label (COMMA label)* SEMICOLON;
 
 label : unsignedInteger;
 
-typeDefinitionPart : TYPE (typeDefinition SEMI) +;
+unsignedInteger : INTEGER;
 
-typeDefinition : identifier EQUAL (type_ | functionType | procedureType);
+typeDefinitionPart : TYPE (typeDefinition SEMICOLON) +;
 
-variableDeclarationPart : VAR variableDeclaration (SEMI variableDeclaration)* SEMI;
+typeDefinition : identifier EQUAL (type | functionType | procedureType);
+
+functionType : FUNCTION (formalParameterList)? COLON resultType;
+
+resultType : typeIdentifier;
+
+functionDeclaration : FUNCTION identifier (formalParameterList)? COLON resultType SEMICOLON block;
+
+procedureType : PROCEDURE (formalParameterList)?;
+
+variableDeclarationPart : VAR variableDeclaration (SEMICOLON variableDeclaration)* SEMICOLON;
 
 variableDeclaration: identifierList COLON type;
 
-procedureAndFunctionDeclarationPart : procedureOrFunctionDeclaration SEMI;
+procedureAndFunctionDeclarationPart : procedureOrFunctionDeclaration SEMICOLON;
 
 procedureOrFunctionDeclaration : procedureDeclaration
                                | functionDeclaration
                                ;
                             
-procedureDeclaration : PROCEDURE identifier (formalParameterList)? SEMI block;
+procedureDeclaration : PROCEDURE identifier (formalParameterList)? SEMICOLON block;
 
-formalParameterList : LPAREN formalParameterSection (SEMI formalParameterSection)* RPAREN;
+formalParameterList : LPAREN formalParameterSection (SEMICOLON formalParameterSection)* RPAREN;
 
 formalParameterSection : parameterGroup
                        | VAR parameterGroup
@@ -247,7 +259,7 @@ parameterGroup : identifierList COLON typeIdentifier;
 
 compoundStatement : BEGIN statements END;
 
-usesUnitsPart : USES identifierList SEMI;
+usesUnitsPart : USES identifierList SEMICOLON;
 
 structuredStatement : compoundStatement
                     | conditionalStatement
@@ -265,13 +277,13 @@ simpleStatement : assignmentStatement
                 | emptyStatement_
                 ;
 
-assignmentStatement : variable ASSIGN expression;
+assignmentStatement : variable ASSIGN expr;
 
 procedureStatement : identifier (LPAREN parameterList RPAREN)?;
 
 parameterList : actualParameter (COMMA actualParameter)*;
 
-actualParameter : expression parameterwidth*;
+actualParameter : expr parameterwidth*;
 
 gotoStatement : GOTO label;
 
@@ -279,7 +291,7 @@ emptyStatement_ :;
 
 empty_ :/* empty */;
 
-parameterwidth : ':' expression;
+parameterwidth : ':' expr;
 
 AND             : A N D;
 ARRAY           : A R R A Y;
