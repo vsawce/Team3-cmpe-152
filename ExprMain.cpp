@@ -26,9 +26,14 @@ std::string lispToXml(ifstream &insLisp) {
             xmlString += "\n";
         }
         else if (c == ')') {
-            level--;
             levelChange = true;
+            xmlString += token + "\n";
+            for (int i = 0; i < level; i++) {
+                xmlString += "\t";
+            }
+            level--;
             xmlString += "</" + strStack.back() + ">\n";
+            token = "";
             strStack.pop_back();
             //xmlString += "\n";
         }
