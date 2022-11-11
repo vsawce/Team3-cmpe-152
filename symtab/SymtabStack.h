@@ -1,9 +1,10 @@
 /**
- * SymtabStack
+ * <h1>SymtabStack</h1>
  *
- * The symbol table stack.</p>
+ * <p>The symbol table stack.</p>
  *
- * For instructional purposes only.  No warranties.
+ * <p>Copyright (c) 2020 by Ronald Mak</p>
+ * <p>For instructional purposes only.  No warranties.</p>
  */
 #ifndef SYMTABSTACK_H_
 #define SYMTABSTACK_H_

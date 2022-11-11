@@ -1,9 +1,10 @@
 /**
- * Symtab
+ * <h1>Symtab</h1>
  *
- * The symbol table.</p>
+ * <p>The symbol table.</p>
  *
-  * For instructional purposes only.  No warranties.
+ * <p>Copyright (c) 2020 by Ronald Mak</p>
+ * <p>For instructional purposes only.  No warranties.</p>
  */
 #ifndef SYMTABIMPL_H_
 #define SYMTABIMPL_H_
@@ -25,8 +26,6 @@ class Symtab
 {
 private:
     int nestingLevel;                     // scope nesting level
-    int slotNumber;                       // local variables array slot number
-    int maxSlotNumber;                    // max slot number value
     SymtabEntry *ownerId;                 // symbol table entry of the owner
     map<string, SymtabEntry *> contents;  // entries
 
@@ -38,8 +37,7 @@ public:
      * @param nesting_level the scope nesting level of this table
      */
     Symtab(const int nestingLevel)
-        : nestingLevel(nestingLevel), slotNumber(-1), maxSlotNumber(-1),
-          ownerId(nullptr) {}
+        : nestingLevel(nestingLevel), ownerId(nullptr) {}
 
     /**
      * Destructor.
@@ -51,22 +49,6 @@ public:
      * @return the scope nesting level of this entry.
      */
     int getNestingLevel() const { return nestingLevel; }
-
-    /**
-     * Get the maximum local variables array slot number.
-     * @return the maximum slot number.
-     */
-    int getMaxSlotNumber() { return maxSlotNumber; }
-
-    /**
-     * Compute and return the next local variables array slot number
-     * @return the slot number.
-     */
-    int nextSlotNumber()
-    {
-        maxSlotNumber = ++slotNumber;
-        return slotNumber;
-    }
 
     /**
      * Generate a name for an unnamed type.
