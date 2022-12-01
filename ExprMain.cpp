@@ -65,7 +65,8 @@ std::string lispToXml(ifstream &insLisp) {
                 xmlString += "\t";
             }
             //xmlString += "\n";
-        append(xmlString, token);
+        }
+        //append(xmlString, token);
         //append to list
     }
     return xmlString;
@@ -75,15 +76,15 @@ void lispToSymtab(ifstream &insLisp, ofstream &outsSymtab) {
     char c;
     intermediate::symtab::SymtabStack *sts = new intermediate::symtab::SymtabStack();
     intermediate::symtab::Symtab *st = sts->getLocalSymtab();
-    std::string token = "";
     bool firstToken = false;
     list<std::string> strStack;
     //int level = -1;
-    //std::string xmlString = "";
+    std::string xmlString = "";
     std::string token = "";
     intermediate::symtab::Kind kind;
     bool isType = false;
-    /*bool nextIsIdentifier = false;
+    bool nextIsIdentifier = false;
+    /*
     bool nextIsType = false;
     bool nextIsKind = false;
     bool nextIsValue = false;
@@ -108,9 +109,9 @@ void lispToSymtab(ifstream &insLisp, ofstream &outsSymtab) {
     bool nextIsChar = false;
     bool nextIsValueRange = false;
     bool nextIsValueList = false;
-    bool nextIsValueRangeList = false;*/
+    bool nextIsValueRangeList = false;
+    */
     //bool firstToken = false;
-    list<std::string> strStack;
     //list<std::string> strStack;
 
     while (insLisp >> noskipws >> c) { // Not EOF
@@ -154,7 +155,7 @@ void lispToSymtab(ifstream &insLisp, ofstream &outsSymtab) {
         else {
             token += c;
         }
-        append(xmlString, token);
+        //append(xmlString, token);
         //append to list
         cout << xmlString << endl;
         //cout << token << endl;
@@ -204,7 +205,7 @@ tree::ParseTreeWalker walker;
 //walker.walk(&listener, parser.program());
 // Create a lexer which scans the input stream
 // to create a token stream.
-CommonTokenStream tokens(&lexer);
+//CommonTokenStream tokens(&lexer);
 // Print the token stream.
 //tokens.fill();
 //for (Token *token : tokens.getTokens()) {
