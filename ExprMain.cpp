@@ -43,7 +43,6 @@ std::string lispToXml(ifstream &insLisp) {
             strStack.pop_back();
             xmlString += token;
         } //xmlString += "\n";
-        }
         else if (c == ' ') {
             for (int i = 0; i < level; i++) {
                 xmlString += "\t";
