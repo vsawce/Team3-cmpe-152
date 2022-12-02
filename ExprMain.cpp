@@ -97,6 +97,12 @@ void lispToSymtab(ifstream &insLisp, ofstream &outsSymtab) {
         else if (token == "variableDeclaration" && c == ' ') {
             kind = intermediate::symtab::Kind::VARIABLE;
         }
+        else if (token == "formalParameterSection" && c == ' ') {
+            kind = intermediate::symtab::Kind::VALUE_PARAMETER;
+        }
+        else if (token == "VAR" && prevToken == "formalParameterSection" && c == ' ') {
+            kind = intermediate::symtab::Kind::REFERENCE_PARAMETER;
+        }
         else if (token == "constantDeclaration" && c == ' ') {
             kind = intermediate::symtab::Kind::CONSTANT;
         } 
