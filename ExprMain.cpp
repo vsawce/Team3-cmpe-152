@@ -68,7 +68,7 @@ std::string lispToXml(ifstream &insLisp) {
     return xmlString;
 }
 
-void lispToSymtab(ifstream &insLisp, ofstream &outsSymtab) {
+void lispToSymtab(ifstream &insLisp, ofstream &outsSt) {
     char c;
     intermediate::symtab::SymtabStack *sts = new intermediate::symtab::SymtabStack();
     intermediate::symtab::Symtab *st = sts->getLocalSymtab();
@@ -135,7 +135,7 @@ void lispToSymtab(ifstream &insLisp, ofstream &outsSymtab) {
     }
     //vector<SymtabEntry *> sortedE = st->sortedEntries();
     for (int i = 0; i < st->sortedEntries().size(); i++) { //For each entry
-        outsSymtab << i << " " << st->sortedEntries()[i]->getName() << "\t\t" << intermediate::symtab::KIND_STRINGS[to_underlying(st->sortedEntries()[i]->getKind())] << "\t\t"  <<endl;
+        outsSt << i << " " << st->sortedEntries()[i]->getName() << "\t\t" << intermediate::symtab::KIND_STRINGS[to_underlying(st->sortedEntries()[i]->getKind())] << "\t\t"  <<endl;
     }
 }
 
