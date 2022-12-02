@@ -14,7 +14,7 @@ CONST
     euler = 2.71828;
     zero = 0;
 
-function max(no1: integer; no2: integer): integer;
+function max(num1: integer; num2: integer): integer;
     var
         result: integer;
     begin
