@@ -75,6 +75,7 @@ void lispToSymtab(ifstream &insLisp, ofstream &outsSymtab) {
     //int level = -1;
     //std::string xmlString = "";
     std::string token = "";
+    std::string prevToken = "";
     intermediate::symtab::Kind kind;
     bool isType = false;
     bool nextIsIdentifier = false;
@@ -123,6 +124,7 @@ void lispToSymtab(ifstream &insLisp, ofstream &outsSymtab) {
             }
         }
         else if (c == ' ') {
+            prevToken = token;
             token = "";
         }
         else {
