@@ -1,0 +1,3 @@
+0 HelloWorld		PROGRAM		NULL
+1 day		type		NULL
+2 euler		constant		NULL

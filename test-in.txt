@@ -9,6 +9,7 @@ TYPE
 VAR
     i : integer;
     j : integer;
+    x : real;
 
 CONST
     euler = 2.71828;
