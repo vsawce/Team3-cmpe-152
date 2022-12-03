@@ -12,8 +12,8 @@
 #include <string>
 #include <vector>
 
-#include "../../Object.h"
-#include "intermediate/symtab/Symtab.h"
+#include "Object.h"
+#include "Symtab.h"
 
 namespace intermediate { namespace type {
 

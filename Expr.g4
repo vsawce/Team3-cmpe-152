@@ -351,7 +351,7 @@ WITH            : W I T H;
 XOR             : X O R;
 INTEGER         : (MINUSOP)? [0-9]+ ;
 REAL            : (MINUSOP)? [0-9]* '.' [0-9]+;
-IDENTIFIER      : [a-zA-Z]+ ; 
+IDENTIFIER      : [a-zA-Z]+[a-zA-Z0-9_]* ; 
 PLUSOP          : '+';
 MINUSOP         : '-';
 MULTOP          : '*';
