@@ -159,6 +159,9 @@ void lispToSymtab(ifstream &insLisp, ofstream &outsSt) {
         std::string typestring = "NULL";
         if (st->sortedEntries()[i]->getKind() == intermediate::symtab::Kind::VARIABLE) {
             //WORK HERE
+            typestring = st->sortedEntries()[i]->getType()->getIdentifier();
+            outsSt << st->sortedEntries()[i]->getName() << " " << kind_to_underlying(st->sortedEntries()[i]->getKind()) << " " << typestring << endl;
+            //underneath is the old code
             intermediate::type::Typespec *poopform = st->sortedEntries()[i]->getType();
             int poop = form_to_underlying(poopform->getForm()); //Equals 1433512416 for some reason, should be < 5
             intermediate::type::FORM_STRINGS[ form_to_underlying(st->sortedEntries()[i]->getType()->getForm()) ];
