@@ -140,9 +140,9 @@ void lispToSymtab(ifstream &insLisp, ofstream &outsSt) {
                     if (token == "integer") {
                         form = intermediate::type::Form::SCALAR;
                     }
-                    intermediate::type::Typespec ts(form);
+                    intermediate::type::Typespec *ts = new intermediate::type::Typespec(form);
                     nextIsType = false;                
-                    ste->setType(&ts);
+                    ste->setType(ts);
                 }
             }
         }
@@ -167,7 +167,6 @@ void lispToSymtab(ifstream &insLisp, ofstream &outsSt) {
             intermediate::type::Typespec *poopform = st->sortedEntries()[i]->getType();
             int poop = form_to_underlying(poopform->getForm()); //Equals 1433512416 for some reason, should be < 5
             intermediate::type::FORM_STRINGS[ form_to_underlying(st->sortedEntries()[i]->getType()->getForm()) ];
-            //typestring = intermediate::type::FORM_STRINGS[form_to_underlying(st->sortedEntries()[i]->getType()->getForm())];
         }
         
         //form_to_underlying(st->sortedEntries()[i]->getType()->getForm());
