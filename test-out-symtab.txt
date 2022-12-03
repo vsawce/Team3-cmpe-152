@@ -1,3 +1,20 @@
 0 HelloWorld		PROGRAM		NULL
 1 day		type		NULL
 2 euler		constant		NULL
+i 3 0
+3 i		variable		NULL
+4 int		type		NULL
+5 integer		undefined		NULL
+j 3 0
+6 j		variable		NULL
+7 max		FUNCTION		NULL
+8 num1		value parameter		NULL
+9 num2		value parameter		NULL
+10 real		undefined		NULL
+result 3 0
+11 result		variable		NULL
+12 vector		type		NULL
+13 vectorOfVector		type		NULL
+x 3 0
+14 x		variable		NULL
+15 zero		constant		NULL

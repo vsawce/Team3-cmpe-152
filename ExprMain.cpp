@@ -192,12 +192,15 @@ int main(int argc, const char *args[]){
 std::string outFile = "test-out.txt";
 std::string lispFile = "test-out-tree-lisp.txt";
 std::string xmlFile = "test-out-tree.xml";
+std::string symtabFile = "test-out-symtab.txt";
+std::string sicXeFile = "test-out-sicxe.asm";
 
 ifstream ins;
 ofstream outs(outFile);
 ofstream outsLisp(lispFile);
 ofstream outsXml(xmlFile);
-ofstream outsSymtab("test-out-symtab.txt");
+ofstream outsSymtab(symtabFile);
+ofstream outsSicXe(sicXeFile);
 // Create the input stream.
 ins.open(args[1]);
 if (ins.fail()) {
@@ -216,6 +219,7 @@ CommonTokenStream tokens(&lexer);
 ExprParser parser(&tokens);
 // Create a tree walker that feeds off the parser's tree
 tree::ParseTreeWalker walker;
+tree::ParseTree *tree = parser.program();
 //tree::ParseTree *tree = parser.program();
 // Walk the tree created during the parse, trigger callbacks
 // on entry to and exit from each rule.
@@ -231,17 +235,20 @@ outs << token->toString() << std::endl;
 }
 cout << endl << "-----" << endl;
 // Print the parse tree in Lisp format.
-outsLisp << "Parse tree:" << endl;
-outsLisp << parser.program()->toStringTree(&parser) << endl;
+//outsLisp << "Parse tree:" << endl;
+//outsLisp << parser.program()->toStringTree(&parser) << endl;
+outs << endl << "Parse tree (Lisp format):" << endl;
+outs << tree->toStringTree(&parser) << endl;
+outsLisp << tree->toStringTree(&parser) << endl;
 cout << endl << "-----" << endl;
 // Print the parse tree in XML format.
-outsXml << "Parse tree:" << endl;
-outsXml << parser.program()->toStringTree(&parser) << endl;
-cout << endl << "-----" << endl;
+//outsXml << "Parse tree:" << endl;
+//outsXml << parser.program()->toStringTree(&parser) << endl;
+//cout << endl << "-----" << endl;
 // Print the symbol table.
-outsSymtab << "Symbol table:" << endl;
-outsSymtab << parser.program()->toStringTree(&parser) << endl;
-cout << endl << "-----" << endl;
+//outsSymtab << "Symbol table:" << endl;
+//outsSymtab << parser.program()->toStringTree(&parser) << endl;
+//cout << endl << "-----" << endl;
 
 /*outs << endl << "Parse tree (Lisp format):" << endl;
 outs << tree->toStringTree(&parser) << endl;
@@ -249,15 +256,15 @@ outsLisp << tree->toStringTree(&parser) << endl;*/
 
 ifstream insLisp(lispFile);
 ifstream insLisp2(lispFile);
-ifstream insXml(xmlFile);
-//ofstream outsSymtab("test-out-symtab.txt");
+ifstream insLisp3(lispFile);
+ifstream insSymTab(symtabFile);
 
 outsXml << lispToXml(insLisp) << endl;
 outs << endl;
-lispToSymtab(insLisp2, outs);
-//lispToSymtab(insLisp2, outsSymtab);
+lispToSymtab(insLisp2, outsSymtab);
+generateSicXe(insSymTab, insLisp3, outsSicXe);
 
-cout << "Program complete, check: " << outFile << ", " << lispFile << ", " << xmlFile << endl;
+cout << "Program complete, check: " << outFile << ", " << lispFile << ", " << xmlFile << ", " << symtabFile << ", " << sicXeFile << endl;
 return 0;
 }
 
