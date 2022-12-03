@@ -176,8 +176,12 @@ void lispToSymtab(ifstream &insLisp, ofstream &outsSt) {
     }
 }
 
-void generateSicXe(ifstream &insSymTab, ifstream &insLisp,
-                 ofstream &outsSX) {
+void generateSicXe(ifstream &insSymTab, ifstream &insLisp, ofstream &outsSX) {
+    char c;
+    intermediate::symtab::SymtabStack *sts = new intermediate::symtab::SymtabStack();
+    intermediate::symtab::Symtab *st = sts->getLocalSymtab();
+    //int level = -1;
+    //std::string xmlString = "";
     /*
     for (int i = 0; i < st->sortedEntries().size(); i++) { //For each entry
         outsSX << i << " " << st->sortedEntries()[i]->getName() << "\t\t" << intermediate::symtab::KIND_STRINGS[kind_to_underlying(st->sortedEntries()[i]->getKind())] << "\t\t"  <<endl;
@@ -220,12 +224,6 @@ tree::ParseTreeWalker walker;
 //walker.walk(&listener, parser.program());
 // Create a lexer which scans the input stream
 // to create a token stream.
-//CommonTokenStream tokens(&lexer);
-// Print the token stream.
-//tokens.fill();
-//for (Token *token : tokens.getTokens()) {
-//    cout << token->toString() << endl;
-//}
 outs << "Tokens:" << endl;
 tokens.fill();
 for (Token *token : tokens.getTokens())
