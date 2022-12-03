@@ -2,8 +2,8 @@
 #include <fstream>
 #include <list>
 #include "antlr4-runtime.h"
-#include "ExprLexer.h"
-#include "ExprParser.h"
+#include "target/generated-sources/antlr4/ExprLexer.h"
+#include "target/generated-sources/antlr4/ExprParser.h"
 #include "symtab/SymtabStack.h"
 #include "symtab/Typespec.h"
 using namespace antlrcpp;
@@ -97,11 +97,13 @@ void lispToSymtab(ifstream &insLisp, ofstream &outsSt) {
         else if (token == "procedureDeclarationHeader" && c == ' ') {
             kind = intermediate::symtab::Kind::PROCEDURE;
             //New table
+            //st = sts->enterLocal(token);
         }
         else if (token == "functionDeclarationHeader" && c == ' ') {
             kind = intermediate::symtab::Kind::FUNCTION;
             //New table
             //sts->push();
+            //st = sts->enterLocal(token);
         }
         else if (token == "variableDeclaration" && c == ' ') {
             kind = intermediate::symtab::Kind::VARIABLE;
@@ -159,6 +161,9 @@ void lispToSymtab(ifstream &insLisp, ofstream &outsSt) {
         std::string typestring = "NULL";
         if (st->sortedEntries()[i]->getKind() == intermediate::symtab::Kind::VARIABLE) {
             //WORK HERE
+            intermediate::type::SymtabEntry *typestring = st->sortedEntries()[i]->getType()->getIdentifier();
+            outsSt << st->sortedEntries()[i]->getName() << " " << kind_to_underlying(st->sortedEntries()[i]->getKind()) << " " << typestring << endl;
+            //underneath is the old code
             intermediate::type::Typespec *poopform = st->sortedEntries()[i]->getType();
             int poop = form_to_underlying(poopform->getForm()); //Equals 1433512416 for some reason, should be < 5
             intermediate::type::FORM_STRINGS[ form_to_underlying(st->sortedEntries()[i]->getType()->getForm()) ];
@@ -166,6 +171,7 @@ void lispToSymtab(ifstream &insLisp, ofstream &outsSt) {
         }
         
         //form_to_underlying(st->sortedEntries()[i]->getType()->getForm());
+        //outsSt << st->sortedEntries()[i]->getName() << " " << kind_to_underlying(st->sortedEntries()[i]->getKind()) << " " << typestring << endl;
         outsSt << i << " " << st->sortedEntries()[i]->getName() << "\t\t" << intermediate::symtab::KIND_STRINGS[kind_to_underlying(st->sortedEntries()[i]->getKind())] << "\t\t" << typestring << /*intermediate::type::FORM_STRINGS[form_to_underlying(st->sortedEntries()[i]->getType()->getForm())] << */endl;
     }
 }
