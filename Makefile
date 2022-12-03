@@ -37,4 +37,4 @@ antlr:
 
 #remove the build target executable and object files
 clean:
-	rm -rf $(TARGET) $(OBJECTS) $(OUT) $(PROJECTPATH)/target/generated-sources $(wildcard *.dSYM)
+	rm -rf $(TARGET) $(OBJECTS) $(OUT) $(PROJECTPATH)/target .antlr/ $(wildcard *.dSYM)

@@ -1,4 +1,4 @@
-Assignment #6
+Assignment #7 (Final Compiler Project)
 
 Using make:
     - make antlr:   Generate source with ANTLR
