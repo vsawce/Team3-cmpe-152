@@ -139,7 +139,6 @@ void lispToSymtab(ifstream &insLisp, ofstream &outsSt) {
                         form = intermediate::type::Form::SCALAR;
                     }
                     intermediate::type::Typespec *ts = new intermediate::type::Typespec(form);
-                    int poop3 = form_to_underlying(form); //Equals 1433512416 for some reason, should be < 5
                     nextIsType = false;                
                     ste->setType(ts);
                 }
